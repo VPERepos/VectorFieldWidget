@@ -3,127 +3,52 @@ package com.personal.LearningJavaFX;
 import javafx.application.*;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.*;
 import javafx.stage.*;
 
-
 public class Arrow extends Group {
 
-        private final Line line;
-    
-        public Arrow() {
-            this(new Line(), new Line(), new Line());
+    private Line m_Middle;
+    private Polygon m_Triangle;
+
+    public Arrow(Point2D Start, Point2D End, Paint Color, double Opacity)
+    {
+        m_Middle = new Line();
+        m_Middle.setStrokeWidth(1); 
+        m_Middle.setStartX(Start.getX()); 
+        m_Middle.setStartY(Start.getY());
+        m_Middle.setEndX(End.getX()); 
+        m_Middle.setEndY(End.getY());
+        m_Middle.setStroke(Color);
+        m_Middle.setOpacity(Opacity);
+
+        m_Triangle = new Polygon();
+        var VectorDir = 0.0;
+        if(End.getX()-Start.getX()< 0.00000000000001)
+        {
+            VectorDir = 0.5*Math.PI;
         }
-    
-        private static final double arrowLength = 20;
-        private static final double arrowWidth = 7;
-        
-        private Arrow(Line line, Line arrow1, Line arrow2) {
-            super(line, arrow1, arrow2);
-            this.line = line;
-            this.line.setOpacity(0.6);
-            this.line.setStrokeWidth(2);
-            this.line.setStroke(Color.rgb(50, 100, 50));
-            arrow1.setStrokeWidth(2);
-            arrow2.setStrokeWidth(2);
-            arrow1.setOpacity(0.6);
-            arrow2.setOpacity(0.6);
-            InvalidationListener updater = o -> {
-                double ex = getEndX();
-                double ey = getEndY();
-                double sx = getStartX();
-                double sy = getStartY();
-    
-                arrow1.setEndX(ex);
-                arrow1.setEndY(ey);
-                arrow2.setEndX(ex);
-                arrow2.setEndY(ey);
-    
-                if (ex == sx && ey == sy) {
-                    // arrow parts of length 0
-                    arrow1.setStartX(ex);
-                    arrow1.setStartY(ey);
-                    arrow2.setStartX(ex);
-                    arrow2.setStartY(ey);
-                } else {
-                    double factor = arrowLength / Math.hypot(sx-ex, sy-ey);
-                    double factorO = arrowWidth / Math.hypot(sx-ex, sy-ey);
-    
-                    // part in direction of main line
-                    double dx = (sx - ex) * factor*0.5;
-                    double dy = (sy - ey) * factor*0.5;
-    
-                    // part ortogonal to main line
-                    double ox = (sx - ex) * factorO*0.4;
-                    double oy = (sy - ey) * factorO*0.4;
-    
-                    arrow1.setStartX(ex + dx - oy);
-                    arrow1.setStartY(ey + dy + ox);
-                    arrow2.setStartX(ex + dx + oy);
-                    arrow2.setStartY(ey + dy - ox);
-                }
-            };
-    
-            // add updater to properties
-            startXProperty().addListener(updater);
-            startYProperty().addListener(updater);
-            endXProperty().addListener(updater);
-            endYProperty().addListener(updater);
-            updater.invalidated(null);
+        else
+        {
+            VectorDir = Math.atan((Start.getY()-End.getY())/(Start.getX()-End.getX()));
         }
-    
-        // start/end properties
-    
-        public final void setStartX(double value) {
-            line.setStartX(value);
-        }
-    
-        public final double getStartX() {
-            return line.getStartX();
-        }
-    
-        public final DoubleProperty startXProperty() {
-            return line.startXProperty();
-        }
-    
-        public final void setStartY(double value) {
-            line.setStartY(value);
-        }
-    
-        public final double getStartY() {
-            return line.getStartY();
-        }
-    
-        public final DoubleProperty startYProperty() {
-            return line.startYProperty();
-        }
-    
-        public final void setEndX(double value) {
-            line.setEndX(value);
-        }
-    
-        public final double getEndX() {
-            return line.getEndX();
-        }
-    
-        public final DoubleProperty endXProperty() {
-            return line.endXProperty();
-        }
-    
-        public final void setEndY(double value) {
-            line.setEndY(value);
-        }
-    
-        public final double getEndY() {
-            return line.getEndY();
-        }
-    
-        public final DoubleProperty endYProperty() {
-            return line.endYProperty();
-        }
-    
+        m_Triangle.getPoints().addAll(new Double[]{
+            End.getX(), End.getY(),
+            End.getX()+10.0*Math.cos(-VectorDir-0.3-0.5*Math.PI), End.getX()+10.0*Math.sin(-VectorDir-0.3-0.5*Math.PI),
+            End.getX()+10.0*Math.cos(-VectorDir+0.3-0.5*Math.PI), End.getX()+10.0*Math.sin(-VectorDir+0.3-0.5*Math.PI),
+            End.getX(), End.getY()});
+        m_Triangle.setStroke(Color);
+        m_Triangle.setFill(Color);
     }
+
+    public Group CreateArrow()
+    {
+        return new Group(m_Middle,m_Triangle);
+    }
+}

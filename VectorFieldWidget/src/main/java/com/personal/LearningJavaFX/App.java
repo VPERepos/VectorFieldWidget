@@ -19,29 +19,13 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         Pane root = new Pane();
-        /*Arrow arrow = new Arrow();
-        root.getChildren().add(arrow);
-
-        root.setOnMouseClicked(evt -> {
-            switch (evt.getButton()) {
-                case PRIMARY:
-                    // set pos of end with arrow head
-                    arrow.setEndX(evt.getX());
-                    arrow.setEndY(evt.getY());
-                    break;
-                case SECONDARY:
-                    // set pos of end without arrow head
-                    arrow.setStartX(evt.getX());
-                    arrow.setStartY(evt.getY());
-                    break;
-            }
-        });*/
-        root.setPrefSize(500, 375);
+        
+        root.setPrefSize(600, 375);
         VectorfieldWidget VectorField = new VectorfieldWidget(root);
-        Scene scene = new Scene(root, 500, 375,true,SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(root, 600, 375,true,SceneAntialiasing.BALANCED);
         
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
-             System.out.println("Height: " + stage.getHeight() + " Width: " + stage.getWidth());
+             
              VectorField.SetWidth(root.getWidth());
              VectorField.SetHeight(root.getHeight());
              VectorField.PlotVectorField();
