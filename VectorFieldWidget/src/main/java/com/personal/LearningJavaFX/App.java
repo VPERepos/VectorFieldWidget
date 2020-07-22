@@ -36,12 +36,14 @@ public class App extends Application {
                     break;
             }
         });*/
-        VectorfieldWidget VectorField = new VectorfieldWidget(root, 400.0, 400.0);
-        Scene scene = new Scene(root, 400, 400);
+        root.setPrefSize(500, 375);
+        VectorfieldWidget VectorField = new VectorfieldWidget(root);
+        Scene scene = new Scene(root, 500, 375,true,SceneAntialiasing.BALANCED);
+        
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
              System.out.println("Height: " + stage.getHeight() + " Width: " + stage.getWidth());
-             VectorField.SetWidth(stage.getWidth());
-             VectorField.SetHeight(stage.getHeight());
+             VectorField.SetWidth(root.getWidth());
+             VectorField.SetHeight(root.getHeight());
              VectorField.PlotVectorField();
         };
         stage.widthProperty().addListener(stageSizeListener);
