@@ -37,8 +37,9 @@ public class App extends Application {
         double dYmin=-0.1;
         double dYmax=0.1;
         int NumOfPoints=100;
-        VectorField.SetVectorFieldData(GenerateVectorFielddata(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints)); 
-
+        
+        VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints)); 
+        
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
              
              VectorField.SetWidth(root.getWidth());
@@ -51,7 +52,7 @@ public class App extends Application {
         stage.show();
     }
 
-    public ArrayList<Double[]> GenerateVectorFielddata(double Xmin,double Xmax, double Ymin,double Ymax, double dXmin, double dXmax, double dYmin, double dYmax, int NumOfPoints)
+    public ArrayList<Double[]> GenerateVectorFieldData(double Xmin,double Xmax, double Ymin,double Ymax, double dXmin, double dXmax, double dYmin, double dYmax, int NumOfPoints)
     {
         ArrayList<Double[]> SampleData = new ArrayList<Double[]>();
         
