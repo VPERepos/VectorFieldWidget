@@ -29,22 +29,52 @@ public class Arrow extends Group {
         m_Middle.setOpacity(Opacity);
 
         m_Triangle = new Polygon();
-        var VectorDir = 0.0;
-        if(End.getX()-Start.getX()< 0.00000000000001)
+        
+        double PointX1 = End.getX();
+        double PointY1 = End.getY();
+                
+        double PointX2;
+        double PointY2;
+        
+        double PointX3;
+        double PointY3;
+        
+        if (End.getX() == Start.getX() && End.getY() == Start.getY()) 
         {
-            VectorDir = 0.5*Math.PI;
-        }
-        else
+            // arrow parts of length 0
+            PointX2 = End.getX();
+            PointY2 = End.getY();
+            PointX3 = End.getX();
+            PointY3 = End.getY();
+        } 
+        else 
         {
-            VectorDir = Math.atan((Start.getY()-End.getY())/(Start.getX()-End.getX()));
+            /*double factor = arrowLength / Math.hypot(sx-ex, sy-ey);
+            double factorO = arrowWidth / Math.hypot(sx-ex, sy-ey);*/
+
+            // part in direction of main line
+            double dx = (Start.getX() - End.getX()) * 0.1;
+            double dy = (Start.getY() - End.getY()) * 0.1;
+
+            // part ortogonal to main line
+            double ox = (Start.getX() - End.getX()) * 0.04;
+            double oy = (Start.getY() - End.getY()) * 0.04;
+
+            PointX2 = End.getX() + dx - oy;
+            PointY2 = End.getY() + dy + ox;
+
+            PointX3 = End.getX() + dx + oy;
+            PointY3 = End.getY() + dy - ox;
+
+            m_Triangle.getPoints().addAll(new Double[]{
+                PointX1, PointY1,
+                PointX2, PointY2,
+                PointX3, PointY3,
+                PointX1, PointY1});
+
+            m_Triangle.setStroke(Color);
+            m_Triangle.setFill(Color);
         }
-        m_Triangle.getPoints().addAll(new Double[]{
-            End.getX(), End.getY(),
-            End.getX()+10.0*Math.cos(-VectorDir-0.3-0.5*Math.PI), End.getX()+10.0*Math.sin(-VectorDir-0.3-0.5*Math.PI),
-            End.getX()+10.0*Math.cos(-VectorDir+0.3-0.5*Math.PI), End.getX()+10.0*Math.sin(-VectorDir+0.3-0.5*Math.PI),
-            End.getX(), End.getY()});
-        m_Triangle.setStroke(Color);
-        m_Triangle.setFill(Color);
     }
 
     public Group CreateArrow()
