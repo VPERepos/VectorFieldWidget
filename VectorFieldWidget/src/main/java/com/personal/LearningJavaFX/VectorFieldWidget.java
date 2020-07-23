@@ -1,5 +1,6 @@
 package com.personal.LearningJavaFX;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.*;
@@ -56,7 +57,7 @@ class VectorfieldWidget
     private Text m_PlotNameLabel;
     private int m_FontSizePlotLabel;
 
-    private List<Double[]> m_VectorFieldData;
+    private ArrayList<Double[]> m_VectorFieldData;
 
 
     private Group m_Canvas;
@@ -571,7 +572,7 @@ class VectorfieldWidget
         m_YAxisName = YAxisName;
     }
 
-    public void SetVectorFieldData(List<Double[]> VectorFieldData)
+    public void SetVectorFieldData(ArrayList<Double[]> VectorFieldData)
     {
         m_VectorFieldData = VectorFieldData;
     } 

@@ -1,5 +1,8 @@
 package com.personal.LearningJavaFX;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.application.*;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
@@ -9,7 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
 import javafx.stage.*;
-
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * JavaFX App
@@ -24,6 +28,17 @@ public class App extends Application {
         VectorfieldWidget VectorField = new VectorfieldWidget(root);
         Scene scene = new Scene(root, 600, 375,true,SceneAntialiasing.BALANCED);
         
+        double Xmin=0.0;
+        double Xmax=1.0;
+        double Ymin=0.0;
+        double Ymax=1.0;
+        double dXmin=-0.1;
+        double dXmax=0.1;
+        double dYmin=-0.1;
+        double dYmax=0.1;
+        int NumOfPoints=100;
+        VectorField.SetVectorFieldData(GenerateVectorFielddata(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints)); 
+
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
              
              VectorField.SetWidth(root.getWidth());
@@ -36,6 +51,27 @@ public class App extends Application {
         stage.show();
     }
 
+    public ArrayList<Double[]> GenerateVectorFielddata(double Xmin,double Xmax, double Ymin,double Ymax, double dXmin, double dXmax, double dYmin, double dYmax, int NumOfPoints)
+    {
+        ArrayList<Double[]> SampleData = new ArrayList<Double[]>();
+        
+        Random rand = new Random(); //instance of random class
+        double X = 0.0;
+        double Y = 0.0;
+        double dX = 0.0;
+        double dY = 0.0;
+        for(int i=0; i<NumOfPoints; i++)
+        {
+            X = ThreadLocalRandom.current().nextDouble(Xmin, Xmax);
+            Y = ThreadLocalRandom.current().nextDouble(Ymin, Ymax);
+            dX = ThreadLocalRandom.current().nextDouble(dXmin, dXmax);
+            dY = ThreadLocalRandom.current().nextDouble(dYmin, dYmax);
+
+            SampleData.add(new Double[]{X,Y,X+dX,Y+dY});
+        }
+        
+        return SampleData;
+    }
     public static void main(String[] args) {
         launch();
     }
