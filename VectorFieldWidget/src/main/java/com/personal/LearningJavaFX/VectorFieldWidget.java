@@ -80,10 +80,11 @@ class VectorfieldWidget
     private Region m_SpacerPlotAreaColorBar;
     
     private Region m_MainVerticalSpacerUpper;
-    
+    private Region m_MainVerticalSpacerLower;
 
     private Region m_MainHorizontalSpacerLeft;
-        
+    private Region m_MainHorizontalSpacerRight;
+
     private Region m_YLabelVerticalSpacerUpper;
     private Region m_YLabelVerticalSpacerLower;
     private VBox m_YLabelBox;
@@ -566,12 +567,20 @@ class VectorfieldWidget
     {
         ClearFieldPlot();
         m_MainVerticalSpacerUpper = new Region();
-        m_MainVerticalSpacerUpper.setMinHeight(0.1*m_Width);
+        //m_MainVerticalSpacerUpper.setMinHeight(0.05*m_Height);
+        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
+
+        m_MainVerticalSpacerLower = new Region();
+        //m_MainVerticalSpacerLower.setMinHeight(0.05*m_Height);
         VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
 
         m_MainHorizontalSpacerLeft = new Region();
-        m_MainHorizontalSpacerLeft.setMinSize(0.1*m_Width, 0.6*m_Height);
+        //m_MainHorizontalSpacerLeft.setMinSize(0.05*m_Width, 0.6*m_Height);
         HBox.setHgrow(m_MainHorizontalSpacerLeft, Priority.ALWAYS);
+
+        m_MainHorizontalSpacerRight = new Region();
+        //m_MainHorizontalSpacerRight.setMinSize(0.05*m_Width, 0.6*m_Height);
+        HBox.setHgrow(m_MainHorizontalSpacerRight, Priority.ALWAYS);
                         
         InitPlotName();
         InitYAxis();
@@ -585,8 +594,10 @@ class VectorfieldWidget
 
         m_Grid = new GridPane();
                
-        m_Grid.add(m_MainHorizontalSpacerLeft, 0, 2);
-        m_Grid.add(m_MainVerticalSpacerUpper, 4, 0);
+        //m_Grid.add(m_MainHorizontalSpacerLeft, 0, 2);
+        //m_Grid.add(m_MainHorizontalSpacerRight, 8, 2);
+        //m_Grid.add(m_MainVerticalSpacerUpper, 4, 0);
+        //m_Grid.add(m_MainVerticalSpacerLower, 4, 6);
         m_Grid.add(m_PlotLabelBox, 4, 1);
         m_Grid.add(m_PlotingArea, 4, 2);
         m_Grid.add(m_SpacerPlotAreaColorBar,5, 2);
@@ -606,8 +617,10 @@ class VectorfieldWidget
     
     public void PlotVectorField()
     {
-        m_MainVerticalSpacerUpper.setMinHeight(0.1*m_Width);
-        m_MainHorizontalSpacerLeft.setMinSize(0.1*m_Width, 0.6*m_Height);
+        m_MainVerticalSpacerUpper.setMinHeight(0.15*m_Height);
+        m_MainHorizontalSpacerLeft.setMinSize(0.05*m_Width, 0.6*m_Height);
+        m_MainVerticalSpacerLower.setMinHeight(0.15*m_Height);
+        m_MainHorizontalSpacerRight.setMinSize(0.05*m_Width, 0.6*m_Height);
         m_PlotAxesRectangle.setWidth(0.6*m_Width);  
         m_PlotAxesRectangle.setHeight(0.6*m_Height);
         m_ColorBar.setHeight(0.6*m_Height);
