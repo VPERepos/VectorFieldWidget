@@ -20,7 +20,7 @@ public class Arrow extends Group {
     public Arrow(Point2D Start, Point2D End, Paint Color, double Opacity)
     {
         m_Middle = new Line();
-        m_Middle.setStrokeWidth(1); 
+        m_Middle.setStrokeWidth(1.5); 
         m_Middle.setStartX(Start.getX()); 
         m_Middle.setStartY(Start.getY());
         m_Middle.setEndX(End.getX()); 
@@ -49,16 +49,18 @@ public class Arrow extends Group {
         } 
         else 
         {
-            /*double factor = arrowLength / Math.hypot(sx-ex, sy-ey);
-            double factorO = arrowWidth / Math.hypot(sx-ex, sy-ey);*/
+            var ArrowWidth = 2;
+            var ArrowLength = 6; 
+            double factor = ArrowLength / Math.hypot(Start.getX() - End.getX(), Start.getY() - End.getY());
+            double factorO = ArrowWidth / Math.hypot(Start.getX() - End.getX(), Start.getY() - End.getY());
 
             // part in direction of main line
-            double dx = (Start.getX() - End.getX()) * 0.1;
-            double dy = (Start.getY() - End.getY()) * 0.1;
+            double dx = (Start.getX() - End.getX())*factor;
+            double dy = (Start.getY() - End.getY())*factor;
 
             // part ortogonal to main line
-            double ox = (Start.getX() - End.getX()) * 0.04;
-            double oy = (Start.getY() - End.getY()) * 0.04;
+            double ox = (Start.getX() - End.getX())*factorO;
+            double oy = (Start.getY() - End.getY())*factorO;
 
             PointX2 = End.getX() + dx - oy;
             PointY2 = End.getY() + dy + ox;

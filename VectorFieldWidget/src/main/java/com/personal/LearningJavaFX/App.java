@@ -29,15 +29,16 @@ public class App extends Application {
         Scene scene = new Scene(root, 600, 375,true,SceneAntialiasing.BALANCED);
         
         double Xmin=0.0;
-        double Xmax=1.0;
+        double Xmax=4056.0;
         double Ymin=0.0;
-        double Ymax=1.0;
-        double dXmin=-0.1;
-        double dXmax=0.1;
-        double dYmin=-0.1;
-        double dYmax=0.1;
-        int NumOfPoints=100;
+        double Ymax=3040.0;
+        double dXmin=-0.01;
+        double dXmax=0.01;
+        double dYmin=-0.01;
+        double dYmax=0.01;
+        int NumOfPoints=1000;
         
+        VectorField.SetScaleFactor(10000.0);
         VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints)); 
         
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{

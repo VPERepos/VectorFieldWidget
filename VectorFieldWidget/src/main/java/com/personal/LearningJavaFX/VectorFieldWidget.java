@@ -40,6 +40,8 @@ class VectorfieldWidget
 
     private double m_MaxVecLen;
     private double m_MinVecLen;
+    private double m_MaxVecLenTransformed;
+    private double m_MinVecLenTransformed;
     
     private double m_VecDScale;
 
@@ -140,7 +142,8 @@ class VectorfieldWidget
 
     private GridPane m_Grid;
 
-    Group m_PlotingArea;
+    private StackPane m_PlotingArea;
+    private Group m_Arrows;
 
 	public VectorfieldWidget(Pane ParrentPane)
     {
@@ -473,38 +476,90 @@ class VectorfieldWidget
     {
         m_PlotAxesRectangle = new Rectangle();
         m_PlotAxesRectangle.setStroke(Color.BLACK);
+        m_PlotAxesRectangle.setOpacity(0.8);
         m_PlotAxesRectangle.setStrokeWidth(2);
         m_PlotAxesRectangle.setFill(null);
+        
         m_PlotAxesRectangle.setWidth(0.6*m_Width);  
         m_PlotAxesRectangle.setHeight(0.6*m_Height);
+
+        m_PlotingArea = new StackPane();
+        m_Arrows = new Group();
+        
+        m_PlotingArea.getChildren().add(m_PlotAxesRectangle);
+        m_PlotingArea.getChildren().add(m_Arrows);
+        
+        
         
     }
     
     private void TransformVectorFieldData()
     {
-        double FactorX = m_PlotAxesRectangle.getWidth()/(m_MaxX-m_MinX);
-        double FactorY = m_PlotAxesRectangle.getArcHeight()/(m_MaxY-m_MinY);
+        double FactorX = (m_PlotAxesRectangle.getWidth()-5)/(m_MaxX-m_MinX);
+        double FactorY = (m_PlotAxesRectangle.getHeight()-5)/(m_MaxY-m_MinY);
+        m_MaxVecLenTransformed = Double.MIN_VALUE;
+        m_MinVecLenTransformed = Double.MAX_VALUE;
 
-        for(var DE : m_VectorFieldData)
+        if(m_VectorFieldData != null)
         {
-            double TX1;
-            double TY1;
-            double TX2;
-            double TY2;
+            if(m_VectorFieldDataTransformed!=null)
+            {
+                m_VectorFieldDataTransformed.clear();
+                m_VectorFieldDataTransformed = null;
+                m_VectorFieldDataTransformed = new ArrayList<Double[]>();
+            }
+            else
+            {
+                m_VectorFieldDataTransformed = new ArrayList<Double[]>();
+            }
+            for(var DE : m_VectorFieldData)
+            {
+                double TX1;
+                double TY1;
+                double TX2;
+                double TY2;
+    
+                TX1 = (DE[0]-m_MinX)*FactorX;
+                TX2 = (DE[2]-m_MinX)*FactorX;
 
-            TX1 = (DE[0]-m_MinX)*FactorX;
-            TX2 = (DE[2]-m_MinX)*FactorX;
+                TY1 = (DE[1]-m_MinY)*FactorY;
+                TY2 = (DE[3]-m_MinY)*FactorY;
+                m_VectorFieldDataTransformed.add(new Double[]{TX1,TY1,TX2,TY2});
+                double ActVecLen = Math.sqrt(Math.pow((TX2-TX1), 2)+Math.pow((TY2-TY1), 2));
+
+                if(ActVecLen>m_MaxVecLenTransformed)
+                {
+                    m_MaxVecLenTransformed = ActVecLen;
+                }
+                if(ActVecLen<m_MinVecLenTransformed)
+                {
+                    m_MinVecLenTransformed = ActVecLen;
+                }
+            }
         }
+        
 
     }
 
     private void DrawVectors()
     {
-        var Arrow1 = new Arrow(new Point2D(10.6,1.6), new Point2D(48.4,8.4), Color.rgb(0,0,255), 0.50); 
-        var Arrow2 = new Arrow(new Point2D(100.6,10.6), new Point2D(48.4,57.4), Color.rgb(255,0,0), 0.50);
-        m_PlotingArea = new Group(m_PlotAxesRectangle, Arrow1.CreateArrow());
-
-        m_PlotingArea.getChildren().add(Arrow2.CreateArrow());
+        
+        if(m_Arrows!=null)
+        {
+            m_Arrows.getChildren().clear();
+        }
+        
+        for(var Elem : m_VectorFieldDataTransformed)
+        {
+            var ActVectorLength = Math.sqrt(Math.pow(((Elem[2]-Elem[0])),2)+Math.pow(((Elem[3]-Elem[1])),2));
+            var DirectRatio = (ActVectorLength/m_MaxVecLenTransformed);
+            
+            var ReverseRatio = (m_MinVecLenTransformed/ActVectorLength);
+            var Arrow = new Arrow(new Point2D(Elem[0],Elem[1]), new Point2D(Elem[2],Elem[3]), Color.rgb((int)(DirectRatio*255),0,(int)(ReverseRatio*255)), 0.5); 
+            m_Arrows.getChildren().add(Arrow.CreateArrow());
+            
+        }
+        
     }
 
     private void InitVectorField()
@@ -556,7 +611,86 @@ class VectorfieldWidget
         m_PlotAxesRectangle.setWidth(0.6*m_Width);  
         m_PlotAxesRectangle.setHeight(0.6*m_Height);
         m_ColorBar.setHeight(0.6*m_Height);
+
+        double XTickDelta = Math.abs(m_MaxX-m_MinX)/4.0;
+        m_XTickText5 = new Text(String.format("%.2f", m_MaxX));
+        m_XTickText4 = new Text(String.format("%.2f", m_MinX+3.0*XTickDelta));
+        m_XTickText3 = new Text(String.format("%.2f", m_MinX+2.0*XTickDelta));
+        m_XTickText2 = new Text(String.format("%.2f", m_MinX+XTickDelta));
+        m_XTickText1 = new Text(String.format("%.2f", m_MinX));
+        
+        var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
+        var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
+        var XtickLabelWidth3 = 0.5*m_XTickText3.getText().length();
+        var XtickLabelWidth2 = 0.5*m_XTickText2.getText().length();
+        var XtickLabelWidth1 = 0.5*m_XTickText1.getText().length();
+        m_XTickText1.setTranslateX(-0.3*XtickLabelWidth1*m_FontSizeTickLabels);
+        m_XTickText2.setTranslateX(-0.1*XtickLabelWidth2*m_FontSizeTickLabels);
+        m_XTickText3.setTranslateX(0.2*XtickLabelWidth3*m_FontSizeTickLabels);
+        m_XTickText4.setTranslateX(0.3*XtickLabelWidth4*m_FontSizeTickLabels);
+        m_XTickText5.setTranslateX(0.4*XtickLabelWidth5*m_FontSizeTickLabels);
+        
+        m_XTicksLabelBox.getChildren().clear();
+        m_XTicksLabelBox.getChildren().add(m_XTickText1);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer1);
+        m_XTicksLabelBox.getChildren().add(m_XTickText2);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer2);
+        m_XTicksLabelBox.getChildren().add(m_XTickText3);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer3);
+        m_XTicksLabelBox.getChildren().add(m_XTickText4);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer4);
+        m_XTicksLabelBox.getChildren().add(m_XTickText5);
+
+        double YTickDelta = Math.abs(m_MaxY-m_MinY)/4.0;
+        m_YTickText1 = new Text(String.format("%.2f", m_MaxY));
+        m_YTickText2 = new Text(String.format("%.2f", m_MinY+3.0*YTickDelta));
+        m_YTickText3 = new Text(String.format("%.2f", m_MinY+2.0*YTickDelta));
+        m_YTickText4 = new Text(String.format("%.2f", m_MinY+YTickDelta));
+        m_YTickText5 = new Text(String.format("%.2f", m_MinY));
+        
+        m_YTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
+        m_YTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
+        m_YTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
+        m_YTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
+        m_YTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
+
+        m_YTicksLabelBox.getChildren().clear();
+        m_YTicksLabelBox.getChildren().add(m_YTickText1);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer1);
+        m_YTicksLabelBox.getChildren().add(m_YTickText2);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer2);
+        m_YTicksLabelBox.getChildren().add(m_YTickText3);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer3);
+        m_YTicksLabelBox.getChildren().add(m_YTickText4);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer4);
+        m_YTicksLabelBox.getChildren().add(m_YTickText5);
+
+        double CBTickDelta = Math.abs(m_MaxVecLen-m_MinVecLen)/4.0;
+        m_CBTickText1 = new Text(String.format("%.6f", m_MaxVecLen));
+        m_CBTickText2 = new Text(String.format("%.6f", m_MinVecLen+3.0*CBTickDelta));
+        m_CBTickText3 = new Text(String.format("%.6f", m_MinVecLen+2.0*CBTickDelta));
+        m_CBTickText4 = new Text(String.format("%.6f", m_MinVecLen+CBTickDelta));
+        m_CBTickText5 = new Text(String.format("%.6f", m_MinVecLen));
+        
+        m_CBTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
+        m_CBTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
+        m_CBTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
+        m_CBTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
+        m_CBTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
+        
+        m_CBTicksLabelBox.getChildren().clear();
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText1);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer1);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText2);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer2);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText3);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer3);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText4);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer4);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText5);
+
         TransformVectorFieldData();
+        DrawVectors();
     }
 
     public void SetFontSizeTickLabels(int FontSizeTickLabels)
@@ -609,7 +743,7 @@ class VectorfieldWidget
             }
             if(ActVecLen<m_MinVecLen)
             {
-                m_MaxVecLen = ActVecLen;
+                m_MinVecLen = ActVecLen;
             }
 
             VectorElem[2] = VectorElem[2]+(VectorElem[2]-VectorElem[0])*m_VecDScale;
