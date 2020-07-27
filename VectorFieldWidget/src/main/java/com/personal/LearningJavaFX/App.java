@@ -18,6 +18,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.*;
 import java.util.Random;
+import java.util.TimerTask;
+import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -25,24 +27,39 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class App extends Application {
     
+    
+    private double Xmin;
+    private double Xmax;
+    private double Ymin;
+    private double Ymax;
+    private double dXmin;
+    private double dXmax;
+    private double dYmin;
+    private double dYmax;
+    private int NumOfPoints;
+    private Timer m_Timer;
     @Override
     public void start(Stage stage) {
         
         
+        
         Pane root = new Pane();
-        root.setPrefSize(1000, 500);
+        root.setPrefSize(1000, 750);
         
         TilePane VectorFieldPane = new TilePane(Orientation.HORIZONTAL);
         TilePane ParametersPane = new TilePane(Orientation.HORIZONTAL);
+        
         
         BorderPane Divider = new BorderPane();
         root.setStyle("-fx-background-color: #FFFFFF" );
         Divider.setCenter(VectorFieldPane);
         Divider.setRight(ParametersPane);
         
+        
         root.getChildren().add(Divider);
-        VectorFieldPane.setPrefSize(750, 500);
-        ParametersPane.setPrefSize(100, 500);
+        VectorFieldPane.setPrefSize(850, 750);
+        ParametersPane.setPrefSize(100, 600);
+       
 
         VBox ParametersHolder = new VBox();
 
@@ -51,6 +68,7 @@ public class App extends Application {
         ParametersHolder.getChildren().add(XminLabel);
         ParametersHolder.getChildren().add(XminCtrl);
 
+        
         Label XmaxLabel = new Label("Xmax");
         TextField XmaxCtrl = new TextField("4056.0");
         ParametersHolder.getChildren().add(XmaxLabel);
@@ -101,30 +119,178 @@ public class App extends Application {
         ParametersHolder.getChildren().add(Mode);
         ParametersHolder.getChildren().add(ModesCB);
 
+        Label RefreshingRateLabel = new Label("Refreshing Rate");
+        TextField RefreshingRatePar = new TextField("5");
+        ParametersHolder.getChildren().add(RefreshingRateLabel);
+        ParametersHolder.getChildren().add(RefreshingRatePar);
+
+        Label ScalingFactorLabel = new Label("Scaling Factor");
+        TextField ScalingFactorPar = new TextField("10000.0");
+        ParametersHolder.getChildren().add(ScalingFactorLabel);  
+        ParametersHolder.getChildren().add(ScalingFactorPar);    
+        
         VectorfieldWidget VectorField = new VectorfieldWidget(VectorFieldPane);
-        Scene scene = new Scene(root, 1000, 500,true,SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(root, 1000, 600,true,SceneAntialiasing.BALANCED);
         
-        double Xmin=Double.parseDouble(XminCtrl.getText());
-        double Xmax=Double.parseDouble(XmaxCtrl.getText());
-        double Ymin=Double.parseDouble(YminCtrl.getText());
-        double Ymax=Double.parseDouble(YmaxCtrl.getText());
-        double dXmin=Double.parseDouble(dXminCtrl.getText());
-        double dXmax=Double.parseDouble(dXmaxCtrl.getText());
-        double dYmin=Double.parseDouble(dYminCtrl.getText());
-        double dYmax=Double.parseDouble(dYmaxCtrl.getText());
-        int NumOfPoints=Integer.parseInt(NumOfPointsPar.getText());
+        Xmin=Double.parseDouble(XminCtrl.getText());
+        Xmax=Double.parseDouble(XmaxCtrl.getText());
+        Ymin=Double.parseDouble(YminCtrl.getText());
+        Ymax=Double.parseDouble(YmaxCtrl.getText());
+        dXmin=Double.parseDouble(dXminCtrl.getText());
+        dXmax=Double.parseDouble(dXmaxCtrl.getText());
+        dYmin=Double.parseDouble(dYminCtrl.getText());
+        dYmax=Double.parseDouble(dYmaxCtrl.getText());
+        NumOfPoints=Integer.parseInt(NumOfPointsPar.getText());
         
-        VectorField.SetScaleFactor(10000.0);
+        VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
         VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints)); 
-        
+        class PeriodicDataGenerator extends TimerTask
+        {
+                        
+            public PeriodicDataGenerator()
+            {
+                                
+            }
+            
+            @Override
+            public synchronized void run()
+            {
+                Xmin=Double.parseDouble(XminCtrl.getText());
+                Xmax=Double.parseDouble(XmaxCtrl.getText());
+                Ymin=Double.parseDouble(YminCtrl.getText());
+                Ymax=Double.parseDouble(YmaxCtrl.getText());
+                dXmin=Double.parseDouble(dXminCtrl.getText());
+                dXmax=Double.parseDouble(dXmaxCtrl.getText());
+                dYmin=Double.parseDouble(dYminCtrl.getText());
+                dYmax=Double.parseDouble(dYmaxCtrl.getText());
+                NumOfPoints=Integer.parseInt(NumOfPointsPar.getText());
+                VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+                VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+                               
+                
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        VectorField.PlotVectorField();                      
+                    }
+                }
+                );
+                            
+            }
+        }
+        ModesCB.setOnAction(e->{
+            if(ModesCB.getValue() == "Single Shot")
+            {
+                m_Timer.cancel();
+            }
+            else
+            {
+                m_Timer = new Timer();
+                m_Timer.schedule(new PeriodicDataGenerator(), 100, (long)(1000.0/Double.parseDouble(RefreshingRatePar.getText())));
+            }
+        });
+        XminCtrl.setOnAction(e->{
+            
+            VectorField.SetMinX(Double.parseDouble(XminCtrl.getText()));
+                        
+            VectorField.PlotVectorField();
+        });
+
+        XmaxCtrl.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            Xmax = Double.parseDouble(XmaxCtrl.getText());
+            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        YminCtrl.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            Ymin = Double.parseDouble(YminCtrl.getText());
+            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        YmaxCtrl.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            Ymax = Double.parseDouble(YmaxCtrl.getText());
+            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        dXminCtrl.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            dXmin = Double.parseDouble(dXminCtrl.getText());
+            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        dXmaxCtrl.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            dXmax = Double.parseDouble(dXmaxCtrl.getText());
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        dYminCtrl.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            dYmin = Double.parseDouble(dYminCtrl.getText());
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        dYmaxCtrl.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            dYmax = Double.parseDouble(YmaxCtrl.getText());
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        NumOfPointsPar.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            NumOfPoints = Integer.parseInt(NumOfPointsPar.getText());
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            
+            VectorField.PlotVectorField();
+        });
+
+        ScalingFactorPar.setOnAction(e->{
+            
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            VectorField.PlotVectorField();
+        });
+
+        RefreshingRatePar.setOnAction(e->{
+            if(ModesCB.getValue() == "Continuous Generation")
+            {
+                m_Timer.cancel();
+                m_Timer = new Timer();
+                m_Timer.schedule(new PeriodicDataGenerator(), 100, (long)(1000.0/Double.parseDouble(RefreshingRatePar.getText())));
+            }
+
+        });
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
-            VectorFieldPane.setPrefSize(0.7*root.getWidth(), root.getHeight());
-            ParametersPane.setPrefSize(0.3*root.getWidth(), root.getHeight());
+            VectorFieldPane.setPrefSize(0.75*root.getWidth(), root.getHeight());
+            ParametersPane.setPrefSize(0.1*root.getWidth(), root.getHeight());
             VectorField.SetWidth(VectorFieldPane.getWidth());
             VectorField.SetHeight(VectorFieldPane.getHeight());
             //VectorFieldPane.setPrefSize(root.getWidth());
             VectorField.PlotVectorField();
-            System.out.println(VectorFieldPane.getWidth());
+            //System.out.println(VectorFieldPane.getWidth());
         };
         stage.widthProperty().addListener(stageSizeListener);
         stage.heightProperty().addListener(stageSizeListener); 
@@ -136,7 +302,6 @@ public class App extends Application {
     {
         ArrayList<Double[]> SampleData = new ArrayList<Double[]>();
         
-        Random rand = new Random(); //instance of random class
         double X = 0.0;
         double Y = 0.0;
         double dX = 0.0;

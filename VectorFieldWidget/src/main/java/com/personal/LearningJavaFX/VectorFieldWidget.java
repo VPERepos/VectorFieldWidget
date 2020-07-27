@@ -10,6 +10,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -131,10 +132,12 @@ class VectorfieldWidget
     private Text m_XTickText5;
 
     private HBox m_XTicksBox;
+    private Region m_XTicksHorizonatlSpacer0;
     private Region m_XTicksHorizonatlSpacer1;
     private Region m_XTicksHorizontalSpacer2;
     private Region m_XTicksHorizontalSpacer3;
     private Region m_XTicksHorizontalSpacer4;
+    private Region m_XTicksHorizontalSpacer5;
     private Line m_XTick1;
     private Line m_XTick2;
     private Line m_XTick3;
@@ -371,17 +374,21 @@ class VectorfieldWidget
         m_XTick3.setStrokeWidth(2);
         m_XTick4.setStrokeWidth(2);
         m_XTick5.setStrokeWidth(2);
-
+        
         m_XTicksHorizonatlSpacer1 = new Region();
         m_XTicksHorizontalSpacer2 = new Region();
         m_XTicksHorizontalSpacer3 = new Region();
         m_XTicksHorizontalSpacer4 = new Region();
+       
+        
+        
+        
         HBox.setHgrow(m_XTicksHorizonatlSpacer1, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer2, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer3, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer4, Priority.ALWAYS);
 
-        m_XTicksBox = new HBox(m_XTick1, m_XTicksHorizonatlSpacer1, m_XTick2, m_XTicksHorizontalSpacer2, m_XTick3, m_XTicksHorizontalSpacer3, m_XTick4, m_XTicksHorizontalSpacer4, m_XTick5);
+        m_XTicksBox = new HBox(m_XTick1, m_XTicksHorizonatlSpacer1, m_XTick2, m_XTicksHorizontalSpacer2, m_XTick3, m_XTicksHorizontalSpacer3, m_XTick4, m_XTicksHorizontalSpacer4,m_XTick5);
 
 
         m_XTicksLabelHorizontalSpacer1 = new Region();
@@ -480,24 +487,21 @@ class VectorfieldWidget
         m_PlotAxesRectangle.setOpacity(0.8);
         m_PlotAxesRectangle.setStrokeWidth(2);
         m_PlotAxesRectangle.setFill(null);
-        
         m_PlotAxesRectangle.setWidth(0.6*m_Width);  
         m_PlotAxesRectangle.setHeight(0.6*m_Height);
-
+        
         m_PlotingArea = new StackPane();
         m_Arrows = new Group();
-        
+        m_Arrows.getChildren().add(m_PlotAxesRectangle);
         m_PlotingArea.getChildren().add(m_PlotAxesRectangle);
         m_PlotingArea.getChildren().add(m_Arrows);
-        
-        
-        
+                
     }
     
     private void TransformVectorFieldData()
     {
-        double FactorX = (m_PlotAxesRectangle.getWidth()-5)/(m_MaxX-m_MinX);
-        double FactorY = (m_PlotAxesRectangle.getHeight()-5)/(m_MaxY-m_MinY);
+        double FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
+        double FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
         m_MaxVecLenTransformed = Double.MIN_VALUE;
         m_MinVecLenTransformed = Double.MAX_VALUE;
 
@@ -525,6 +529,9 @@ class VectorfieldWidget
 
                 TY1 = (DE[1]-m_MinY)*FactorY;
                 TY2 = (DE[3]-m_MinY)*FactorY;
+
+                
+
                 m_VectorFieldDataTransformed.add(new Double[]{TX1,TY1,TX2,TY2});
                 double ActVecLen = Math.sqrt(Math.pow((TX2-TX1), 2)+Math.pow((TY2-TY1), 2));
 
@@ -537,6 +544,11 @@ class VectorfieldWidget
                     m_MinVecLenTransformed = ActVecLen;
                 }
             }
+            m_MinX=m_MinX-10/FactorX;
+            m_MinY=m_MinY-10/FactorY;
+
+            m_MaxX=m_MaxX+10/FactorX;
+            m_MaxY=m_MaxY+10/FactorY;
         }
         
 
@@ -609,14 +621,15 @@ class VectorfieldWidget
         m_Grid.add(m_YTicksBox, 3, 2);
         m_Grid.add(m_YTicksLabelBox, 2, 2);
         m_Grid.add(m_YLabelBox, 1, 2);
-                
+        
         m_Canvas.getChildren().add(m_Grid);
         m_ParrentPane.getChildren().add(m_Canvas);
         
     }
     
-    public void PlotVectorField()
+    public synchronized void PlotVectorField()
     {
+        
         m_MainVerticalSpacerUpper.setMinHeight(0.15*m_Height);
         m_MainHorizontalSpacerLeft.setMinSize(0.05*m_Width, 0.6*m_Height);
         m_MainVerticalSpacerLower.setMinHeight(0.15*m_Height);
@@ -631,7 +644,7 @@ class VectorfieldWidget
         m_XTickText3 = new Text(String.format("%.2f", m_MinX+2.0*XTickDelta));
         m_XTickText2 = new Text(String.format("%.2f", m_MinX+XTickDelta));
         m_XTickText1 = new Text(String.format("%.2f", m_MinX));
-        
+                
         var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
         var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
         var XtickLabelWidth3 = 0.5*m_XTickText3.getText().length();
@@ -643,7 +656,9 @@ class VectorfieldWidget
         m_XTickText4.setTranslateX(0.3*XtickLabelWidth4*m_FontSizeTickLabels);
         m_XTickText5.setTranslateX(0.4*XtickLabelWidth5*m_FontSizeTickLabels);
         
+        
         m_XTicksLabelBox.getChildren().clear();
+        
         m_XTicksLabelBox.getChildren().add(m_XTickText1);
         m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer1);
         m_XTicksLabelBox.getChildren().add(m_XTickText2);
@@ -653,6 +668,8 @@ class VectorfieldWidget
         m_XTicksLabelBox.getChildren().add(m_XTickText4);
         m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer4);
         m_XTicksLabelBox.getChildren().add(m_XTickText5);
+        
+        
 
         double YTickDelta = Math.abs(m_MaxY-m_MinY)/4.0;
         m_YTickText1 = new Text(String.format("%.2f", m_MaxY));
@@ -701,9 +718,10 @@ class VectorfieldWidget
         m_CBTicksLabelBox.getChildren().add(m_CBTickText4);
         m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer4);
         m_CBTicksLabelBox.getChildren().add(m_CBTickText5);
-
+        
         TransformVectorFieldData();
         DrawVectors();
+       
     }
 
     public void SetFontSizeTickLabels(int FontSizeTickLabels)
@@ -811,5 +829,9 @@ class VectorfieldWidget
         m_Height = Height;
     }
 
+    public void SetMinX(double MinX)
+    {
+        m_MinX = MinX;
+    }
     
 }
