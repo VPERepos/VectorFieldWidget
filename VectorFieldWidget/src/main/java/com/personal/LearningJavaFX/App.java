@@ -153,7 +153,7 @@ public class App extends Application {
             }
             
             @Override
-            public synchronized void run()
+            public void run()
             {
                 Xmin=Double.parseDouble(XminCtrl.getText());
                 Xmax=Double.parseDouble(XmaxCtrl.getText());
@@ -189,9 +189,9 @@ public class App extends Application {
             }
         });
         XminCtrl.setOnAction(e->{
-            
-            VectorField.SetMinX(Double.parseDouble(XminCtrl.getText()));
-                        
+            VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
+            Xmin = Double.parseDouble(XminCtrl.getText());
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));            
             VectorField.PlotVectorField();
         });
 
@@ -199,7 +199,7 @@ public class App extends Application {
             
             VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
             Xmax = Double.parseDouble(XmaxCtrl.getText());
-            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
             
             VectorField.PlotVectorField();
         });
@@ -208,7 +208,7 @@ public class App extends Application {
             
             VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
             Ymin = Double.parseDouble(YminCtrl.getText());
-            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
             
             VectorField.PlotVectorField();
         });
@@ -217,7 +217,7 @@ public class App extends Application {
             
             VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
             Ymax = Double.parseDouble(YmaxCtrl.getText());
-            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
             
             VectorField.PlotVectorField();
         });
@@ -226,7 +226,7 @@ public class App extends Application {
             
             VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
             dXmin = Double.parseDouble(dXminCtrl.getText());
-            //VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
             
             VectorField.PlotVectorField();
         });
@@ -252,7 +252,7 @@ public class App extends Application {
         dYmaxCtrl.setOnAction(e->{
             
             VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
-            dYmax = Double.parseDouble(YmaxCtrl.getText());
+            dYmax = Double.parseDouble(dYmaxCtrl.getText());
             VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
             
             VectorField.PlotVectorField();
@@ -270,7 +270,7 @@ public class App extends Application {
         ScalingFactorPar.setOnAction(e->{
             
             VectorField.SetScaleFactor(Double.parseDouble(ScalingFactorPar.getText()));
-            VectorField.SetVectorFieldData(GenerateVectorFieldData(Xmin,Xmax,Ymin,Ymax,dXmin,dXmax,dYmin,dYmax,NumOfPoints));
+            VectorField.RefreshData();
             VectorField.PlotVectorField();
         });
 

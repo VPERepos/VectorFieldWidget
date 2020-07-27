@@ -1,50 +1,109 @@
 package com.personal.LearningJavaFX;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import javafx.application.*;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.*;
-import javafx.stage.*;
+
 import javafx.scene.text.*;
 import javafx.scene.layout.GridPane;
 
 class VectorfieldWidget
 {
+    public class Arrow extends Group {
+
+        private Line m_Middle;
+        private Polygon m_Triangle;
+    
+        public Arrow(Point2D Start, Point2D End, Paint Color, double Opacity)
+        {
+            m_Middle = new Line();
+            m_Middle.setStrokeWidth(1.5); 
+            m_Middle.setStartX(Start.getX()); 
+            m_Middle.setStartY(Start.getY());
+            m_Middle.setEndX(End.getX()); 
+            m_Middle.setEndY(End.getY());
+            m_Middle.setStroke(Color);
+            m_Middle.setOpacity(Opacity);
+    
+            m_Triangle = new Polygon();
+            
+            double PointX1 = End.getX();
+            double PointY1 = End.getY();
+                    
+            double PointX2;
+            double PointY2;
+            
+            double PointX3;
+            double PointY3;
+            
+            if (End.getX() == Start.getX() && End.getY() == Start.getY()) 
+            {
+                PointX2 = End.getX();
+                PointY2 = End.getY();
+                PointX3 = End.getX();
+                PointY3 = End.getY();
+            } 
+            else 
+            {
+                var ArrowWidth = 2;
+                var ArrowLength = 6; 
+                double factor = ArrowLength / Math.hypot(Start.getX() - End.getX(), Start.getY() - End.getY());
+                double factorO = ArrowWidth / Math.hypot(Start.getX() - End.getX(), Start.getY() - End.getY());
+    
+                
+                double dx = (Start.getX() - End.getX())*factor;
+                double dy = (Start.getY() - End.getY())*factor;
+    
+                
+                double ox = (Start.getX() - End.getX())*factorO;
+                double oy = (Start.getY() - End.getY())*factorO;
+    
+                PointX2 = End.getX() + dx - oy;
+                PointY2 = End.getY() + dy + ox;
+    
+                PointX3 = End.getX() + dx + oy;
+                PointY3 = End.getY() + dy - ox;
+    
+                m_Triangle.getPoints().addAll(new Double[]{
+                    PointX1, PointY1,
+                    PointX2, PointY2,
+                    PointX3, PointY3,
+                    PointX1, PointY1});
+    
+                m_Triangle.setStroke(Color);
+                m_Triangle.setFill(Color);
+            }
+        }
+    
+        public Group CreateArrow()
+        {
+            return new Group(m_Middle,m_Triangle);
+        }
+    }
     private Pane m_ParrentPane;
     private double m_Width;
     private double m_Height;
-    private double m_PrevWidth;
-    private double m_PrevHeight;
-    
+        
     private double m_MaxX;
     private double m_MinX;
     private double m_MaxY;
     private double m_MinY;
     
-    private double m_MaxDX;
-    private double m_MinDX;
-    private double m_MaxDY;
-    private double m_MinDY;
-
     private double m_MaxVecLen;
     private double m_MinVecLen;
     private double m_MaxVecLenTransformed;
     private double m_MinVecLenTransformed;
     
     private double m_VecDScale;
+    private double m_PrevVecDScale;
 
     private int m_FontSizeTickLabels;
     private int m_FontSizeAxisLabels;
@@ -132,12 +191,12 @@ class VectorfieldWidget
     private Text m_XTickText5;
 
     private HBox m_XTicksBox;
-    private Region m_XTicksHorizonatlSpacer0;
+    
     private Region m_XTicksHorizonatlSpacer1;
     private Region m_XTicksHorizontalSpacer2;
     private Region m_XTicksHorizontalSpacer3;
     private Region m_XTicksHorizontalSpacer4;
-    private Region m_XTicksHorizontalSpacer5;
+    
     private Line m_XTick1;
     private Line m_XTick2;
     private Line m_XTick3;
@@ -149,6 +208,8 @@ class VectorfieldWidget
     private StackPane m_PlotingArea;
     private Group m_Arrows;
 
+    double m_FactorX;
+    double m_FactorY;
 	public VectorfieldWidget(Pane ParrentPane)
     {
         m_XAxisName = "X-Axis";
@@ -164,11 +225,7 @@ class VectorfieldWidget
         m_MaxY = 1.0;
         m_MinY = 0.0;
 
-        m_MaxDX = 0.1;
-        m_MinDX = 0.01;
-        m_MaxDY = 0.1;
-        m_MinDY = 0.01;
-
+        
         m_MaxVecLen = 0.01;
         m_MinVecLen = 0.001;
         
@@ -291,12 +348,12 @@ class VectorfieldWidget
         VBox.setVgrow(m_YTicksLabelVerticalSpacer3, Priority.ALWAYS);
         VBox.setVgrow(m_YTicksLabelVerticalSpacer4, Priority.ALWAYS);
 
-        double YTickDelta = Math.abs(m_MaxY-m_MinY)/4.0;
-        m_YTickText1 = new Text(String.format("%.2f", m_MaxY));
-        m_YTickText2 = new Text(String.format("%.2f", m_MinY+3.0*YTickDelta));
-        m_YTickText3 = new Text(String.format("%.2f", m_MinY+2.0*YTickDelta));
-        m_YTickText4 = new Text(String.format("%.2f", m_MinY+YTickDelta));
-        m_YTickText5 = new Text(String.format("%.2f", m_MinY));
+        double YTickDelta = Math.abs(m_MaxY-m_MinY+20/m_FactorY)/4.0;
+        m_YTickText1 = new Text(String.format("%.2f", m_MaxY+10/m_FactorY));
+        m_YTickText2 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+3.0*YTickDelta));
+        m_YTickText3 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+2.0*YTickDelta));
+        m_YTickText4 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+YTickDelta));
+        m_YTickText5 = new Text(String.format("%.2f", m_MinY-10/m_FactorY));
         
         m_YTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
         m_YTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
@@ -400,12 +457,12 @@ class VectorfieldWidget
         HBox.setHgrow(m_XTicksLabelHorizontalSpacer3, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksLabelHorizontalSpacer4, Priority.ALWAYS);
 
-        double XTickDelta = Math.abs(m_MaxX-m_MinX)/4.0;
-        m_XTickText5 = new Text(String.format("%.2f", m_MaxX));
-        m_XTickText4 = new Text(String.format("%.2f", m_MinX+3.0*XTickDelta));
-        m_XTickText3 = new Text(String.format("%.2f", m_MinX+2.0*XTickDelta));
-        m_XTickText2 = new Text(String.format("%.2f", m_MinX+XTickDelta));
-        m_XTickText1 = new Text(String.format("%.2f", m_MinX));
+        double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
+        m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
+        m_XTickText4 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+3.0*XTickDelta));
+        m_XTickText3 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+2.0*XTickDelta));
+        m_XTickText2 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+XTickDelta));
+        m_XTickText1 = new Text(String.format("%.2f", m_MinX-10/m_FactorX));
         
         var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
         var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
@@ -500,9 +557,9 @@ class VectorfieldWidget
     
     private void TransformVectorFieldData()
     {
-        double FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
-        double FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
-        m_MaxVecLenTransformed = Double.MIN_VALUE;
+        m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
+        m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
+        m_MaxVecLenTransformed = -Double.MAX_VALUE;
         m_MinVecLenTransformed = Double.MAX_VALUE;
 
         if(m_VectorFieldData != null)
@@ -524,11 +581,11 @@ class VectorfieldWidget
                 double TX2;
                 double TY2;
     
-                TX1 = (DE[0]-m_MinX)*FactorX;
-                TX2 = (DE[2]-m_MinX)*FactorX;
+                TX1 = (DE[0]-m_MinX)*m_FactorX;
+                TX2 = (DE[2]-m_MinX)*m_FactorX;
 
-                TY1 = (DE[1]-m_MinY)*FactorY;
-                TY2 = (DE[3]-m_MinY)*FactorY;
+                TY1 = (DE[1]-m_MinY)*m_FactorY;
+                TY2 = (DE[3]-m_MinY)*m_FactorY;
 
                 
 
@@ -544,11 +601,7 @@ class VectorfieldWidget
                     m_MinVecLenTransformed = ActVecLen;
                 }
             }
-            m_MinX=m_MinX-10/FactorX;
-            m_MinY=m_MinY-10/FactorY;
-
-            m_MaxX=m_MaxX+10/FactorX;
-            m_MaxY=m_MaxY+10/FactorY;
+            
         }
         
 
@@ -577,7 +630,7 @@ class VectorfieldWidget
 
     private void InitVectorField()
     {
-        ClearFieldPlot();
+        //ClearFieldPlot();
         m_MainVerticalSpacerUpper = new Region();
         //m_MainVerticalSpacerUpper.setMinHeight(0.05*m_Height);
         VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
@@ -627,7 +680,7 @@ class VectorfieldWidget
         
     }
     
-    public synchronized void PlotVectorField()
+    public void PlotVectorField()
     {
         
         m_MainVerticalSpacerUpper.setMinHeight(0.15*m_Height);
@@ -638,12 +691,12 @@ class VectorfieldWidget
         m_PlotAxesRectangle.setHeight(0.6*m_Height);
         m_ColorBar.setHeight(0.6*m_Height);
 
-        double XTickDelta = Math.abs(m_MaxX-m_MinX)/4.0;
-        m_XTickText5 = new Text(String.format("%.2f", m_MaxX));
-        m_XTickText4 = new Text(String.format("%.2f", m_MinX+3.0*XTickDelta));
-        m_XTickText3 = new Text(String.format("%.2f", m_MinX+2.0*XTickDelta));
-        m_XTickText2 = new Text(String.format("%.2f", m_MinX+XTickDelta));
-        m_XTickText1 = new Text(String.format("%.2f", m_MinX));
+        double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
+        m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
+        m_XTickText4 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+3.0*XTickDelta));
+        m_XTickText3 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+2.0*XTickDelta));
+        m_XTickText2 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+XTickDelta));
+        m_XTickText1 = new Text(String.format("%.2f", m_MinX-10/m_FactorX));
                 
         var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
         var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
@@ -671,12 +724,12 @@ class VectorfieldWidget
         
         
 
-        double YTickDelta = Math.abs(m_MaxY-m_MinY)/4.0;
-        m_YTickText1 = new Text(String.format("%.2f", m_MaxY));
-        m_YTickText2 = new Text(String.format("%.2f", m_MinY+3.0*YTickDelta));
-        m_YTickText3 = new Text(String.format("%.2f", m_MinY+2.0*YTickDelta));
-        m_YTickText4 = new Text(String.format("%.2f", m_MinY+YTickDelta));
-        m_YTickText5 = new Text(String.format("%.2f", m_MinY));
+        double YTickDelta = Math.abs(m_MaxY-m_MinY+20/m_FactorY)/4.0;
+        m_YTickText1 = new Text(String.format("%.2f", m_MaxY+10/m_FactorY));
+        m_YTickText2 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+3.0*YTickDelta));
+        m_YTickText3 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+2.0*YTickDelta));
+        m_YTickText4 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+YTickDelta));
+        m_YTickText5 = new Text(String.format("%.2f", m_MinY-10/m_FactorY));
         
         m_YTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
         m_YTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
@@ -734,6 +787,7 @@ class VectorfieldWidget
     }
     public void SetScaleFactor(double ScaleFactor)
     {
+        m_PrevVecDScale = m_VecDScale;
         m_VecDScale = ScaleFactor;
     }
 
@@ -753,12 +807,12 @@ class VectorfieldWidget
         {
             m_VectorFieldData.clear();
         }
-        
+        m_VectorFieldData = null;
         m_VectorFieldData = VectorFieldData;
         
-        m_MaxX = Double.MIN_VALUE;
+        m_MaxX = -Double.MAX_VALUE;
         m_MinX = Double.MAX_VALUE;
-        m_MaxY = Double.MIN_VALUE;
+        m_MaxY = -Double.MAX_VALUE;
         m_MinY = Double.MAX_VALUE;
 
         m_MaxVecLen = Double.MIN_VALUE;
@@ -777,8 +831,8 @@ class VectorfieldWidget
                 m_MinVecLen = ActVecLen;
             }
 
-            VectorElem[2] = VectorElem[2]+(VectorElem[2]-VectorElem[0])*m_VecDScale;
-            VectorElem[3] = VectorElem[3]+(VectorElem[3]-VectorElem[1])*m_VecDScale;
+            VectorElem[2] = VectorElem[0]+(VectorElem[2]-VectorElem[0])*m_VecDScale;
+            VectorElem[3] = VectorElem[1]+(VectorElem[3]-VectorElem[1])*m_VecDScale;
 
             if(VectorElem[0]>m_MaxX)
             {
@@ -815,23 +869,100 @@ class VectorfieldWidget
             }
             
         }
-    } 
+        m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
+        m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
 
+        
+    } 
+    public void RefreshData()
+    {
+                
+        m_MaxX = -Double.MAX_VALUE;
+        m_MinX = Double.MAX_VALUE;
+        m_MaxY = -Double.MAX_VALUE;
+        m_MinY = Double.MAX_VALUE;
+
+        m_MaxVecLen = -Double.MAX_VALUE;
+        m_MinVecLen = Double.MAX_VALUE;
+        
+        for(var VectorElem : m_VectorFieldData)
+        {
+            
+
+            VectorElem[2] = VectorElem[0]+(VectorElem[2]-VectorElem[0])/m_PrevVecDScale;
+            VectorElem[3] = VectorElem[1]+(VectorElem[3]-VectorElem[1])/m_PrevVecDScale;
+
+            double ActVecLen = Math.sqrt(Math.pow((VectorElem[2]-VectorElem[0]), 2)+Math.pow((VectorElem[3]-VectorElem[1]), 2));
+
+            if(ActVecLen>m_MaxVecLen)
+            {
+                m_MaxVecLen = ActVecLen;
+            }
+            if(ActVecLen<m_MinVecLen)
+            {
+                m_MinVecLen = ActVecLen;
+            }
+
+            VectorElem[2] = VectorElem[0]+(VectorElem[2]-VectorElem[0])*m_VecDScale;
+            VectorElem[3] = VectorElem[1]+(VectorElem[3]-VectorElem[1])*m_VecDScale;
+
+            if(VectorElem[0]>m_MaxX)
+            {
+                m_MaxX = VectorElem[0];
+            }
+            if(VectorElem[0]<m_MinX)
+            {
+                m_MinX = VectorElem[0];
+            }
+            if(VectorElem[1]>m_MaxY)
+            {
+                m_MaxY = VectorElem[1];
+            }
+            if(VectorElem[1]<m_MinY)
+            {
+                m_MinY = VectorElem[1];
+            }
+
+            if(VectorElem[2]>m_MaxX)
+            {
+                m_MaxX = VectorElem[2];
+            }
+            if(VectorElem[2]<m_MinX)
+            {
+                m_MinX = VectorElem[2];
+            }
+            if(VectorElem[3]>m_MaxY)
+            {
+                m_MaxY = VectorElem[3];
+            }
+            if(VectorElem[3]<m_MinY)
+            {
+                m_MinY = VectorElem[3];
+            }
+            
+            
+        }
+        m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
+        m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
+
+        
+
+    }
+    public ArrayList<Double[]> GetData()
+    {
+        return m_VectorFieldData;
+    }
     public void SetWidth(double Width)
     {
-        m_PrevWidth = m_Width;
+        //m_PrevWidth = m_Width;
         m_Width = Width;
     }
 
     public void SetHeight(double Height)
     {
-        m_PrevHeight = m_Height;
+        //m_PrevHeight = m_Height;
         m_Height = Height;
     }
 
-    public void SetMinX(double MinX)
-    {
-        m_MinX = MinX;
-    }
-    
+        
 }
