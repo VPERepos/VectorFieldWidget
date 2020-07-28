@@ -240,77 +240,6 @@ class VectorfieldWidget
         InitVectorField();
         
     }
-
-    private void ClearFieldPlot()
-    {
-        m_Canvas = null;
-        m_PlotAxesRectangle = null;
-        m_ColorBar = null;
-        m_CBTicksLabelBox = null;
-        m_CBTicksLabelVerticalSpacer1 = null;
-        m_CBTicksLabelVerticalSpacer2 = null;
-        m_CBTicksLabelVerticalSpacer3 = null;
-        m_CBTicksLabelVerticalSpacer4 = null;
-        m_CBTickText1 = null;
-        m_CBTickText2 = null;
-        m_CBTickText3 = null;
-        m_CBTickText4 = null;
-        m_CBTickText5 = null;
-        m_SpacerPlotAreaColorBar = null;
-        m_MainVerticalSpacerUpper = null;
-        m_MainHorizontalSpacerLeft = null;
-        m_YLabelVerticalSpacerUpper = null;
-        m_YLabelVerticalSpacerLower = null;
-        m_YLabelBox = null;
-        m_PlotLabelHorizontalSpacerLeft = null;
-        m_PlotLabelHorizontalSpacerRight = null;
-        m_PlotLabelBox = null;
-        m_YTicksLabelBox = null;
-        m_YTicksLabelVerticalSpacer1 = null;
-        m_YTicksLabelVerticalSpacer2 = null;
-        m_YTicksLabelVerticalSpacer3 = null;
-        m_YTicksLabelVerticalSpacer4 = null;
-        m_YTickText1 = null;
-        m_YTickText2 = null;
-        m_YTickText3 = null;
-        m_YTickText4 = null;
-        m_YTickText5 = null;
-        m_YTicksBox = null;
-        m_YTicksVerticalSpacer1 = null;
-        m_YTicksVerticalSpacer2 = null;
-        m_YTicksVerticalSpacer3 = null;
-        m_YTicksVerticalSpacer4 = null;
-        m_YTick1 = null;
-        m_YTick2 = null;
-        m_YTick3 = null;
-        m_YTick4 = null;
-        m_YTick5 = null;
-        m_XLabelHorizontalSpacerLeft = null;
-        m_XLabelHorizontalSpacerRight = null;
-        m_XLabelBox = null;
-        m_XTicksLabelBox = null;
-        m_XTicksLabelHorizontalSpacer1 = null;
-        m_XTicksLabelHorizontalSpacer2 = null;
-        m_XTicksLabelHorizontalSpacer3 = null;
-        m_XTicksLabelHorizontalSpacer4 = null;
-        m_XTickText1 = null;
-        m_XTickText2 = null;
-        m_XTickText3 = null;
-        m_XTickText4 = null;
-        m_XTickText5 = null;
-        m_XTicksBox = null;
-        m_XTicksHorizonatlSpacer1 = null;
-        m_XTicksHorizontalSpacer2 = null;
-        m_XTicksHorizontalSpacer3 = null;
-        m_XTicksHorizontalSpacer4 = null;
-        m_XTick1 = null;
-        m_XTick2 = null;
-        m_XTick3 = null;
-        m_XTick4 = null;
-        m_XTick5 = null;
-        m_Grid = null;
-        m_PlotingArea = null;
-    }
     
     private void InitPlotName()
     {
@@ -630,21 +559,17 @@ class VectorfieldWidget
 
     private void InitVectorField()
     {
-        //ClearFieldPlot();
+        
         m_MainVerticalSpacerUpper = new Region();
-        //m_MainVerticalSpacerUpper.setMinHeight(0.05*m_Height);
         VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
 
         m_MainVerticalSpacerLower = new Region();
-        //m_MainVerticalSpacerLower.setMinHeight(0.05*m_Height);
         VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
 
         m_MainHorizontalSpacerLeft = new Region();
-        //m_MainHorizontalSpacerLeft.setMinSize(0.05*m_Width, 0.6*m_Height);
         HBox.setHgrow(m_MainHorizontalSpacerLeft, Priority.ALWAYS);
 
         m_MainHorizontalSpacerRight = new Region();
-        //m_MainHorizontalSpacerRight.setMinSize(0.05*m_Width, 0.6*m_Height);
         HBox.setHgrow(m_MainHorizontalSpacerRight, Priority.ALWAYS);
                         
         InitPlotName();
@@ -658,11 +583,7 @@ class VectorfieldWidget
         m_Canvas = new Group();
 
         m_Grid = new GridPane();
-               
-        //m_Grid.add(m_MainHorizontalSpacerLeft, 0, 2);
-        //m_Grid.add(m_MainHorizontalSpacerRight, 8, 2);
-        //m_Grid.add(m_MainVerticalSpacerUpper, 4, 0);
-        //m_Grid.add(m_MainVerticalSpacerLower, 4, 6);
+        
         m_Grid.add(m_PlotLabelBox, 4, 1);
         m_Grid.add(m_PlotingArea, 4, 2);
         m_Grid.add(m_SpacerPlotAreaColorBar,5, 2);
@@ -954,13 +875,11 @@ class VectorfieldWidget
     }
     public void SetWidth(double Width)
     {
-        //m_PrevWidth = m_Width;
         m_Width = Width;
     }
 
     public void SetHeight(double Height)
     {
-        //m_PrevHeight = m_Height;
         m_Height = Height;
     }
 

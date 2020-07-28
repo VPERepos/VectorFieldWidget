@@ -1,30 +1,28 @@
 package com.personal.LearningJavaFX;
 
 import java.util.ArrayList;
-import java.util.List;
+//import java.util.List;
 
 import javafx.application.*;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
+//import javafx.beans.InvalidationListener;
+//import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
+//import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+//import javafx.scene.paint.Color;
+//import javafx.scene.shape.*;
 import javafx.stage.*;
-import java.util.Random;
+//import java.util.Random;
 import java.util.TimerTask;
 import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * JavaFX App
- */
+
 public class App extends Application {
     
     
@@ -288,9 +286,8 @@ public class App extends Application {
             ParametersPane.setPrefSize(0.1*root.getWidth(), root.getHeight());
             VectorField.SetWidth(VectorFieldPane.getWidth());
             VectorField.SetHeight(VectorFieldPane.getHeight());
-            //VectorFieldPane.setPrefSize(root.getWidth());
             VectorField.PlotVectorField();
-            //System.out.println(VectorFieldPane.getWidth());
+            
         };
         stage.widthProperty().addListener(stageSizeListener);
         stage.heightProperty().addListener(stageSizeListener); 
