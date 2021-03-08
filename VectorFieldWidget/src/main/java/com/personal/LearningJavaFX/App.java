@@ -1,23 +1,17 @@
 package com.personal.LearningJavaFX;
 
 import java.util.ArrayList;
-//import java.util.List;
+
 
 import javafx.application.*;
-//import javafx.beans.InvalidationListener;
-//import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-//import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-//import javafx.scene.paint.Color;
-//import javafx.scene.shape.*;
 import javafx.stage.*;
-//import java.util.Random;
 import java.util.TimerTask;
 import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
