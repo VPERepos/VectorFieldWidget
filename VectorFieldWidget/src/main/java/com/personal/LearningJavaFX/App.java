@@ -75,17 +75,10 @@ public class App extends Application {
         @Override
         public void run()
         {
-            m_Xmin=Double.parseDouble(m_XminCtrl.getText());
-            m_Xmax=Double.parseDouble(m_XmaxCtrl.getText());
-            m_Ymin=Double.parseDouble(m_YminCtrl.getText());
-            m_Ymax=Double.parseDouble(m_YmaxCtrl.getText());
-            m_dXmin=Double.parseDouble(m_dXminCtrl.getText());
-            m_dXmax=Double.parseDouble(m_dXmaxCtrl.getText());
-            m_dYmin=Double.parseDouble(m_dYminCtrl.getText());
-            m_dYmax=Double.parseDouble(m_dYmaxCtrl.getText());
-            m_NumOfPoints=Integer.parseInt(m_NumOfPointsPar.getText());
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            parseParametersFromGuiControls();
+
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
                             
             
             Platform.runLater(new Runnable() {
@@ -314,8 +307,8 @@ public class App extends Application {
         m_VectorField = new VectorfieldWidget(m_VectorFieldPane);
         m_Scene = new Scene(m_Root, 1000, 600,true,SceneAntialiasing.BALANCED);
         
-        m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
-        m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints)); 
+        m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+        m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints)); 
     }
 
     private void setModesComboBoxOnAction()
@@ -336,9 +329,9 @@ public class App extends Application {
     private void setXminCtrlOnAction()
     {
         m_XminCtrl.setOnAction(e->{
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_Xmin = Double.parseDouble(m_XminCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));            
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));            
             m_VectorField.PlotVectorField();
         });
     }
@@ -347,9 +340,9 @@ public class App extends Application {
     {
         m_XmaxCtrl.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_Xmax = Double.parseDouble(m_XmaxCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -359,9 +352,9 @@ public class App extends Application {
     {
         m_YminCtrl.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_Ymin = Double.parseDouble(m_YminCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -371,9 +364,9 @@ public class App extends Application {
     {
         m_YmaxCtrl.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_Ymax = Double.parseDouble(m_YmaxCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -383,9 +376,9 @@ public class App extends Application {
     {
         m_dXminCtrl.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_dXmin = Double.parseDouble(m_dXminCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -395,9 +388,9 @@ public class App extends Application {
     {
         m_dXmaxCtrl.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_dXmax = Double.parseDouble(m_dXmaxCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -407,9 +400,9 @@ public class App extends Application {
     {
         m_dYminCtrl.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_dYmin = Double.parseDouble(m_dYminCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -419,9 +412,9 @@ public class App extends Application {
     {
         m_dYmaxCtrl.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_dYmax = Double.parseDouble(m_dYmaxCtrl.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -431,9 +424,9 @@ public class App extends Application {
     {
         m_NumOfPointsPar.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_NumOfPoints = Integer.parseInt(m_NumOfPointsPar.getText());
-            m_VectorField.SetVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
             
             m_VectorField.PlotVectorField();
         });
@@ -443,8 +436,8 @@ public class App extends Application {
     {
         m_ScalingFactorPar.setOnAction(e->{
             
-            m_VectorField.SetScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
-            m_VectorField.RefreshData();
+            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
+            m_VectorField.refreshData();
             m_VectorField.PlotVectorField();
         });
     }
@@ -467,8 +460,8 @@ public class App extends Application {
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) ->{
             m_VectorFieldPane.setPrefSize(0.75*m_Root.getWidth(), m_Root.getHeight());
             m_ParametersPane.setPrefSize(0.1*m_Root.getWidth(), m_Root.getHeight());
-            m_VectorField.SetWidth(m_VectorFieldPane.getWidth());
-            m_VectorField.SetHeight(m_VectorFieldPane.getHeight());
+            m_VectorField.setWidth(m_VectorFieldPane.getWidth());
+            m_VectorField.setHeight(m_VectorFieldPane.getHeight());
             m_VectorField.PlotVectorField();
             
         };

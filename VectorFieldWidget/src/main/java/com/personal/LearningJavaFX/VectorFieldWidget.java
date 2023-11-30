@@ -210,6 +210,7 @@ class VectorfieldWidget
 
     double m_FactorX;
     double m_FactorY;
+
 	public VectorfieldWidget(Pane ParrentPane)
     {
         m_XAxisName = "X-Axis";
@@ -237,11 +238,59 @@ class VectorfieldWidget
 
         m_VectorFieldDataTransformed = new ArrayList<Double[]>();
 
-        InitVectorField();
+        initVectorField();
         
     }
-    
-    private void InitPlotName()
+
+    private void initVectorField()
+    {
+        
+        m_MainVerticalSpacerUpper = new Region();
+        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
+
+        m_MainVerticalSpacerLower = new Region();
+        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
+
+        m_MainHorizontalSpacerLeft = new Region();
+        HBox.setHgrow(m_MainHorizontalSpacerLeft, Priority.ALWAYS);
+
+        m_MainHorizontalSpacerRight = new Region();
+        HBox.setHgrow(m_MainHorizontalSpacerRight, Priority.ALWAYS);
+                        
+        initPlotName();
+        initYAxis();
+        initXAxis();
+        initColorBar();
+        initPlotAxesRectangle();
+        transformVectorFieldData();
+        drawVectors();
+        initCanvas();
+        
+    }
+
+    private void initCanvas()
+    {
+        m_Canvas = new Group();
+
+        m_Grid = new GridPane();
+        
+        m_Grid.add(m_PlotLabelBox, 4, 1);
+        m_Grid.add(m_PlotingArea, 4, 2);
+        m_Grid.add(m_SpacerPlotAreaColorBar,5, 2);
+        m_Grid.add(m_ColorBar, 6, 2);
+        m_Grid.add(m_CBTicksLabelBox, 7, 2);
+        m_Grid.add(m_XTicksBox, 4, 3);
+        m_Grid.add(m_XTicksLabelBox, 4, 4);
+        m_Grid.add(m_XLabelBox, 4, 5);
+        m_Grid.add(m_YTicksBox, 3, 2);
+        m_Grid.add(m_YTicksLabelBox, 2, 2);
+        m_Grid.add(m_YLabelBox, 1, 2);
+        
+        m_Canvas.getChildren().add(m_Grid);
+        m_ParrentPane.getChildren().add(m_Canvas);
+    }
+
+    private void initPlotName()
     {
         m_PlotNameLabel = new Text(m_PlotName);
         m_PlotNameLabel.setFont(new Font(m_FontSizePlotLabel));
@@ -255,7 +304,7 @@ class VectorfieldWidget
         m_PlotLabelBox = new HBox(m_PlotLabelHorizontalSpacerLeft, m_PlotNameLabel, m_PlotLabelHorizontalSpacerRight);
     }
     
-    private void InitYAxis()
+    private void initYAxis()
     {
         m_YAxisLabel = new Text(m_YAxisName);
         m_YAxisLabel.setFont(new Font(m_FontSizeAxisLabels));
@@ -331,7 +380,7 @@ class VectorfieldWidget
         
     }
 
-    private void InitXAxis()
+    private void initXAxis()
     {
         m_XAxisLabel = new Text(m_XAxisName);
         m_XAxisLabel.setFont(new Font(m_FontSizeAxisLabels));
@@ -415,7 +464,7 @@ class VectorfieldWidget
         m_XTicksLabelBox.setAlignment(Pos.TOP_RIGHT);
     }
 
-    private void InitColorBar()
+    private void initColorBar()
     {
         m_CBTicksLabelVerticalSpacer1 = new Region();
         m_CBTicksLabelVerticalSpacer2 = new Region();
@@ -466,7 +515,7 @@ class VectorfieldWidget
         
     }
     
-    private void InitPlotAxesRectangle()
+    private void initPlotAxesRectangle()
     {
         m_PlotAxesRectangle = new Rectangle();
         m_PlotAxesRectangle.setStroke(Color.BLACK);
@@ -484,7 +533,7 @@ class VectorfieldWidget
                 
     }
     
-    private void TransformVectorFieldData()
+    private void transformVectorFieldData()
     {
         m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
         m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
@@ -534,71 +583,6 @@ class VectorfieldWidget
         }
         
 
-    }
-
-    private void DrawVectors()
-    {
-        
-        if(m_Arrows!=null)
-        {
-            m_Arrows.getChildren().clear();
-        }
-        
-        for(var Elem : m_VectorFieldDataTransformed)
-        {
-            var ActVectorLength = Math.sqrt(Math.pow(((Elem[2]-Elem[0])),2)+Math.pow(((Elem[3]-Elem[1])),2));
-            var DirectRatio = (ActVectorLength/m_MaxVecLenTransformed);
-            
-            var ReverseRatio = (m_MinVecLenTransformed/ActVectorLength);
-            var Arrow = new Arrow(new Point2D(Elem[0],Elem[1]), new Point2D(Elem[2],Elem[3]), Color.rgb((int)(DirectRatio*255),0,(int)(ReverseRatio*255)), 0.5); 
-            m_Arrows.getChildren().add(Arrow.CreateArrow());
-            
-        }
-        
-    }
-
-    private void InitVectorField()
-    {
-        
-        m_MainVerticalSpacerUpper = new Region();
-        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
-
-        m_MainVerticalSpacerLower = new Region();
-        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
-
-        m_MainHorizontalSpacerLeft = new Region();
-        HBox.setHgrow(m_MainHorizontalSpacerLeft, Priority.ALWAYS);
-
-        m_MainHorizontalSpacerRight = new Region();
-        HBox.setHgrow(m_MainHorizontalSpacerRight, Priority.ALWAYS);
-                        
-        InitPlotName();
-        InitYAxis();
-        InitXAxis();
-        InitColorBar();
-        InitPlotAxesRectangle();
-        TransformVectorFieldData();
-        DrawVectors();
-
-        m_Canvas = new Group();
-
-        m_Grid = new GridPane();
-        
-        m_Grid.add(m_PlotLabelBox, 4, 1);
-        m_Grid.add(m_PlotingArea, 4, 2);
-        m_Grid.add(m_SpacerPlotAreaColorBar,5, 2);
-        m_Grid.add(m_ColorBar, 6, 2);
-        m_Grid.add(m_CBTicksLabelBox, 7, 2);
-        m_Grid.add(m_XTicksBox, 4, 3);
-        m_Grid.add(m_XTicksLabelBox, 4, 4);
-        m_Grid.add(m_XLabelBox, 4, 5);
-        m_Grid.add(m_YTicksBox, 3, 2);
-        m_Grid.add(m_YTicksLabelBox, 2, 2);
-        m_Grid.add(m_YLabelBox, 1, 2);
-        
-        m_Canvas.getChildren().add(m_Grid);
-        m_ParrentPane.getChildren().add(m_Canvas);
-        
     }
     
     public void PlotVectorField()
@@ -693,36 +677,57 @@ class VectorfieldWidget
         m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer4);
         m_CBTicksLabelBox.getChildren().add(m_CBTickText5);
         
-        TransformVectorFieldData();
-        DrawVectors();
+        transformVectorFieldData();
+        drawVectors();
        
     }
 
-    public void SetFontSizeTickLabels(int FontSizeTickLabels)
+    private void drawVectors()
+    {
+        
+        if(m_Arrows!=null)
+        {
+            m_Arrows.getChildren().clear();
+        }
+        
+        for(var Elem : m_VectorFieldDataTransformed)
+        {
+            var ActVectorLength = Math.sqrt(Math.pow(((Elem[2]-Elem[0])),2)+Math.pow(((Elem[3]-Elem[1])),2));
+            var DirectRatio = (ActVectorLength/m_MaxVecLenTransformed);
+            
+            var ReverseRatio = (m_MinVecLenTransformed/ActVectorLength);
+            var Arrow = new Arrow(new Point2D(Elem[0],Elem[1]), new Point2D(Elem[2],Elem[3]), Color.rgb((int)(DirectRatio*255),0,(int)(ReverseRatio*255)), 0.5); 
+            m_Arrows.getChildren().add(Arrow.CreateArrow());
+            
+        }
+        
+    }
+
+    public void setFontSizeTickLabels(int FontSizeTickLabels)
     {
         m_FontSizeTickLabels = FontSizeTickLabels;
     }
-    public void SetFontSizeAxisLabels(int FontSizeAxisLabels)
+    public void setFontSizeAxisLabels(int FontSizeAxisLabels)
     {
         m_FontSizeAxisLabels = FontSizeAxisLabels;
     }
-    public void SetScaleFactor(double ScaleFactor)
+    public void setScaleFactor(double ScaleFactor)
     {
         m_PrevVecDScale = m_VecDScale;
         m_VecDScale = ScaleFactor;
     }
 
-    public void SetXAxisName(String XAxisName)
+    public void setXAxisName(String XAxisName)
     {
         m_XAxisName = XAxisName;
     }
 
-    public void SetYAxisName(String YAxisName)
+    public void setYAxisName(String YAxisName)
     {
         m_YAxisName = YAxisName;
     }
 
-    public void SetVectorFieldData(ArrayList<Double[]> VectorFieldData)
+    public void setVectorFieldData(ArrayList<Double[]> VectorFieldData)
     {
         if(m_VectorFieldData!=null)
         {
@@ -795,7 +800,8 @@ class VectorfieldWidget
 
         
     } 
-    public void RefreshData()
+    
+    public void refreshData()
     {
                 
         m_MaxX = -Double.MAX_VALUE;
@@ -869,16 +875,17 @@ class VectorfieldWidget
         
 
     }
-    public ArrayList<Double[]> GetData()
+    
+    public ArrayList<Double[]> getData()
     {
         return m_VectorFieldData;
     }
-    public void SetWidth(double Width)
+    public void setWidth(double Width)
     {
         m_Width = Width;
     }
 
-    public void SetHeight(double Height)
+    public void setHeight(double Height)
     {
         m_Height = Height;
     }
