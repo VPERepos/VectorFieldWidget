@@ -208,40 +208,117 @@ class VectorfieldWidget
     private StackPane m_PlotingArea;
     private Group m_Arrows;
 
-    double m_FactorX;
-    double m_FactorY;
+    private double m_FactorX;
+    private double m_FactorY;
+
+    private LinearGradient m_LinearGradient1;
+    private Stop[] m_GradientStops;
+
+    double m_ActVecLen;
+
 	public VectorfieldWidget(Pane ParrentPane)
+    {
+        initPlotAndAxisNames();
+        initFontSizes();
+        setInitialMinAndMaxValues();
+        initParrentPane(ParrentPane);       
+        initVectorFieldData();
+        initVectorField();
+        
+    }
+
+    private void initPlotAndAxisNames()
     {
         m_XAxisName = "X-Axis";
         m_YAxisName = "Y-Axis";
         m_PlotName = "Vector Field Plot";
+    }
 
+    private void initFontSizes()
+    {
         m_FontSizeTickLabels = 12;
         m_FontSizeAxisLabels = 14;
         m_FontSizePlotLabel = 18;
+    }
 
+    private void setInitialMinAndMaxValues()
+    {
         m_MaxX = 1.0;
         m_MinX = 0.0;
         m_MaxY = 1.0;
         m_MinY = 0.0;
-
         
         m_MaxVecLen = 0.01;
         m_MinVecLen = 0.001;
         
         m_VecDScale = 1.0;
-       
+    }
+
+    private void initParrentPane(Pane ParrentPane)
+    {
         m_ParrentPane = ParrentPane;
         m_Width = m_ParrentPane.getWidth();
         m_Height = m_ParrentPane.getHeight();
+    }
 
+    private void initVectorFieldData()
+    {
         m_VectorFieldDataTransformed = new ArrayList<Double[]>();
+    }
 
-        InitVectorField();
+    private void initVectorField()
+    {
+        
+        initSpacers();                
+        initPlotName();
+        initYAxis();
+        initXAxis();
+        initColorBar();
+        initPlotAxesRectangle();
+        transformVectorFieldData();
+        drawVectors();
+        initCanvas();
         
     }
-    
-    private void InitPlotName()
+
+    private void initSpacers()
+    {
+        m_MainVerticalSpacerUpper = new Region();
+        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
+
+        m_MainVerticalSpacerLower = new Region();
+        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
+
+        m_MainHorizontalSpacerLeft = new Region();
+        HBox.setHgrow(m_MainHorizontalSpacerLeft, Priority.ALWAYS);
+
+        m_MainHorizontalSpacerRight = new Region();
+        HBox.setHgrow(m_MainHorizontalSpacerRight, Priority.ALWAYS);
+    }
+
+    private void initCanvas()
+    {
+        m_Canvas = new Group();
+
+        m_Grid = new GridPane();
+        
+        m_Grid.add(m_PlotLabelBox, 4, 1);
+        m_Grid.add(m_PlotingArea, 4, 2);
+        m_Grid.add(m_SpacerPlotAreaColorBar,5, 2);
+        m_Grid.add(m_ColorBar, 6, 2);
+        m_Grid.add(m_CBTicksLabelBox, 7, 2);
+        m_Grid.add(m_XTicksBox, 4, 3);
+        m_Grid.add(m_XTicksLabelBox, 4, 4);
+        m_Grid.add(m_XLabelBox, 4, 5);
+        m_Grid.add(m_YTicksBox, 3, 2);
+        m_Grid.add(m_YTicksLabelBox, 2, 2);
+        m_Grid.add(m_YLabelBox, 1, 2);
+        
+        m_Canvas.getChildren().add(m_Grid);
+        m_ParrentPane.getChildren().add(m_Canvas);
+    }
+
+    private void initPlotName()
     {
         m_PlotNameLabel = new Text(m_PlotName);
         m_PlotNameLabel.setFont(new Font(m_FontSizePlotLabel));
@@ -255,19 +332,42 @@ class VectorfieldWidget
         m_PlotLabelBox = new HBox(m_PlotLabelHorizontalSpacerLeft, m_PlotNameLabel, m_PlotLabelHorizontalSpacerRight);
     }
     
-    private void InitYAxis()
+    private void initYAxis()
+    {
+        initYAxisLabel();
+        initYLabelBox();
+        initYTickLabelSpacers();
+        initYTicksText();
+        setYTicksTextPosition();
+        setYTicksTextFont();
+        initYTicksLabelBox();
+        initYTicksSpacers();
+        initYTickDrawing();
+        setYTickDrawingLength();
+        setYTickDrawingWidth();
+        initYTicksBox();
+        
+    }
+    
+    private void initYAxisLabel()
     {
         m_YAxisLabel = new Text(m_YAxisName);
         m_YAxisLabel.setFont(new Font(m_FontSizeAxisLabels));
         m_YAxisLabel.setRotate(-90.0);
-        
+    }
+    
+    private void initYLabelBox()
+    {
         m_YLabelVerticalSpacerUpper = new Region();
         m_YLabelVerticalSpacerLower = new Region();
         VBox.setVgrow(m_YLabelVerticalSpacerUpper, Priority.ALWAYS);
         VBox.setVgrow(m_YLabelVerticalSpacerLower, Priority.ALWAYS);
                 
         m_YLabelBox = new VBox(m_YLabelVerticalSpacerUpper, m_YAxisLabel, m_YLabelVerticalSpacerLower);
-
+    }
+    
+    private void initYTickLabelSpacers()
+    {
         m_YTicksLabelVerticalSpacer1 = new Region();
         m_YTicksLabelVerticalSpacer2 = new Region();
         m_YTicksLabelVerticalSpacer3 = new Region();
@@ -276,30 +376,47 @@ class VectorfieldWidget
         VBox.setVgrow(m_YTicksLabelVerticalSpacer2, Priority.ALWAYS);
         VBox.setVgrow(m_YTicksLabelVerticalSpacer3, Priority.ALWAYS);
         VBox.setVgrow(m_YTicksLabelVerticalSpacer4, Priority.ALWAYS);
+    }
 
+    private void initYTicksText()
+    {
         double YTickDelta = Math.abs(m_MaxY-m_MinY+20/m_FactorY)/4.0;
         m_YTickText1 = new Text(String.format("%.2f", m_MaxY+10/m_FactorY));
         m_YTickText2 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+3.0*YTickDelta));
         m_YTickText3 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+2.0*YTickDelta));
         m_YTickText4 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+YTickDelta));
         m_YTickText5 = new Text(String.format("%.2f", m_MinY-10/m_FactorY));
-        
+    }
+
+    private void setYTicksTextPosition()
+    {
+                
         m_YTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
         m_YTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
         m_YTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
         m_YTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
         m_YTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
 
+    }
+
+    private void setYTicksTextFont()
+    {
         m_YTickText1.setFont(new Font(m_FontSizeTickLabels));
         m_YTickText2.setFont(new Font(m_FontSizeTickLabels));
         m_YTickText3.setFont(new Font(m_FontSizeTickLabels));
         m_YTickText4.setFont(new Font(m_FontSizeTickLabels));
         m_YTickText5.setFont(new Font(m_FontSizeTickLabels));
+    }
 
+    private void initYTicksLabelBox()
+    {
         m_YTicksLabelBox = new VBox(m_YTickText1, m_YTicksLabelVerticalSpacer1, m_YTickText2, m_YTicksLabelVerticalSpacer2,m_YTickText3,m_YTicksLabelVerticalSpacer3, m_YTickText4, m_YTicksLabelVerticalSpacer4, m_YTickText5);
         m_YTicksLabelBox.setAlignment(Pos.CENTER_RIGHT);
         m_YTicksLabelBox.setAlignment(Pos.TOP_RIGHT);
-        
+    }
+
+    private void initYTicksSpacers()
+    {
         m_YTicksVerticalSpacer1 = new Region();
         m_YTicksVerticalSpacer2 = new Region();
         m_YTicksVerticalSpacer3 = new Region();
@@ -308,91 +425,97 @@ class VectorfieldWidget
         VBox.setVgrow(m_YTicksVerticalSpacer2, Priority.ALWAYS);
         VBox.setVgrow(m_YTicksVerticalSpacer3, Priority.ALWAYS);
         VBox.setVgrow(m_YTicksVerticalSpacer4, Priority.ALWAYS);
-        
+    }
+
+    private void initYTickDrawing()
+    {
         m_YTick1 = new Line();
         m_YTick2 = new Line();
         m_YTick3 = new Line();
         m_YTick4 = new Line();
         m_YTick5 = new Line();
-        
+    }
+
+    private void setYTickDrawingLength()
+    {
         m_YTick1.setEndX(3.0);
         m_YTick2.setEndX(3.0);
         m_YTick3.setEndX(3.0);
         m_YTick4.setEndX(3.0);
         m_YTick5.setEndX(3.0);
-        
+    }
+    
+    private void setYTickDrawingWidth()
+    {
         m_YTick1.setStrokeWidth(2);
         m_YTick2.setStrokeWidth(2);
         m_YTick3.setStrokeWidth(2);
         m_YTick4.setStrokeWidth(2);
         m_YTick5.setStrokeWidth(2);
-
-        m_YTicksBox = new VBox(m_YTick1, m_YTicksVerticalSpacer1, m_YTick2, m_YTicksVerticalSpacer2, m_YTick3, m_YTicksVerticalSpacer3, m_YTick4, m_YTicksVerticalSpacer4, m_YTick5); 
-        
     }
 
-    private void InitXAxis()
+    private void initYTicksBox()
+    {
+        m_YTicksBox = new VBox(m_YTick1, m_YTicksVerticalSpacer1, m_YTick2, m_YTicksVerticalSpacer2, m_YTick3, m_YTicksVerticalSpacer3, m_YTick4, m_YTicksVerticalSpacer4, m_YTick5); 
+    }
+    
+    private void initXAxis()
+    {
+        initXAxisLabel();
+        initXLabelBox();
+        initXTickLabelSpacers();
+        initXTicksText();
+        setXTicksTextPosition();
+        setXTicksTextFont();
+        initXTicksSpacers();
+        setXTicksLabelBox();
+        initXTicksDrawing();
+        setXTickDrawingLength();
+        setXTickDrawingWidth();
+        initXTicksBox();
+    }
+
+    private void initXAxisLabel()
     {
         m_XAxisLabel = new Text(m_XAxisName);
         m_XAxisLabel.setFont(new Font(m_FontSizeAxisLabels));
-        
+    }
+
+    private void initXLabelBox()
+    {
         m_XLabelHorizontalSpacerLeft = new Region();
         m_XLabelHorizontalSpacerRight = new Region();
         
         m_XLabelBox = new HBox(m_XLabelHorizontalSpacerLeft, m_XAxisLabel, m_XLabelHorizontalSpacerRight);
         HBox.setHgrow(m_XLabelHorizontalSpacerLeft, Priority.ALWAYS);
         HBox.setHgrow(m_XLabelHorizontalSpacerRight, Priority.ALWAYS);
-        
-        m_XTick1 = new Line();
-        m_XTick2 = new Line();
-        m_XTick3 = new Line();
-        m_XTick4 = new Line();
-        m_XTick5 = new Line();
-        
-        m_XTick1.setEndY(3.0);
-        m_XTick2.setEndY(3.0);
-        m_XTick3.setEndY(3.0);
-        m_XTick4.setEndY(3.0);
-        m_XTick5.setEndY(3.0);
-        
-        m_XTick1.setStrokeWidth(2);
-        m_XTick2.setStrokeWidth(2);
-        m_XTick3.setStrokeWidth(2);
-        m_XTick4.setStrokeWidth(2);
-        m_XTick5.setStrokeWidth(2);
-        
+    }
+
+    private void initXTickLabelSpacers()
+    {
         m_XTicksHorizonatlSpacer1 = new Region();
         m_XTicksHorizontalSpacer2 = new Region();
         m_XTicksHorizontalSpacer3 = new Region();
         m_XTicksHorizontalSpacer4 = new Region();
        
-        
-        
-        
         HBox.setHgrow(m_XTicksHorizonatlSpacer1, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer2, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer3, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer4, Priority.ALWAYS);
+    }
 
-        m_XTicksBox = new HBox(m_XTick1, m_XTicksHorizonatlSpacer1, m_XTick2, m_XTicksHorizontalSpacer2, m_XTick3, m_XTicksHorizontalSpacer3, m_XTick4, m_XTicksHorizontalSpacer4,m_XTick5);
-
-
-        m_XTicksLabelHorizontalSpacer1 = new Region();
-        m_XTicksLabelHorizontalSpacer2 = new Region();
-        m_XTicksLabelHorizontalSpacer3 = new Region();
-        m_XTicksLabelHorizontalSpacer4 = new Region();
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer1, Priority.ALWAYS);
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer2, Priority.ALWAYS);
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer3, Priority.ALWAYS);
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer4, Priority.ALWAYS);
-
+    private void initXTicksText()
+    {
         double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
         m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
         m_XTickText4 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+3.0*XTickDelta));
         m_XTickText3 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+2.0*XTickDelta));
         m_XTickText2 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+XTickDelta));
         m_XTickText1 = new Text(String.format("%.2f", m_MinX-10/m_FactorX));
-        
+    }
+
+    private void setXTicksTextPosition()
+    {
         var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
         var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
         var XtickLabelWidth3 = 0.5*m_XTickText3.getText().length();
@@ -403,19 +526,82 @@ class VectorfieldWidget
         m_XTickText3.setTranslateX(0.2*XtickLabelWidth3*m_FontSizeTickLabels);
         m_XTickText4.setTranslateX(0.3*XtickLabelWidth4*m_FontSizeTickLabels);
         m_XTickText5.setTranslateX(0.4*XtickLabelWidth5*m_FontSizeTickLabels);
+    }
 
+    private void setXTicksTextFont()
+    {
         m_XTickText1.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText2.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText3.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText4.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText5.setFont(new Font(m_FontSizeTickLabels));
+    }
 
+    private void setXTicksLabelBox()
+    {
         m_XTicksLabelBox = new HBox(m_XTickText1, m_XTicksLabelHorizontalSpacer1, m_XTickText2, m_XTicksLabelHorizontalSpacer2,m_XTickText3,m_XTicksLabelHorizontalSpacer3, m_XTickText4, m_XTicksLabelHorizontalSpacer4, m_XTickText5);
         m_XTicksLabelBox.setAlignment(Pos.CENTER_RIGHT);
         m_XTicksLabelBox.setAlignment(Pos.TOP_RIGHT);
     }
+    
+    private void initXTicksSpacers()
+    {
+        m_XTicksLabelHorizontalSpacer1 = new Region();
+        m_XTicksLabelHorizontalSpacer2 = new Region();
+        m_XTicksLabelHorizontalSpacer3 = new Region();
+        m_XTicksLabelHorizontalSpacer4 = new Region();
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer1, Priority.ALWAYS);
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer2, Priority.ALWAYS);
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer3, Priority.ALWAYS);
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer4, Priority.ALWAYS);
+    }
 
-    private void InitColorBar()
+    private void initXTicksDrawing()
+    {
+        m_XTick1 = new Line();
+        m_XTick2 = new Line();
+        m_XTick3 = new Line();
+        m_XTick4 = new Line();
+        m_XTick5 = new Line();
+    }
+
+    private void setXTickDrawingLength()
+    {
+        m_XTick1.setEndY(3.0);
+        m_XTick2.setEndY(3.0);
+        m_XTick3.setEndY(3.0);
+        m_XTick4.setEndY(3.0);
+        m_XTick5.setEndY(3.0);
+    }
+
+    private void setXTickDrawingWidth()
+    {
+        m_XTick1.setStrokeWidth(2);
+        m_XTick2.setStrokeWidth(2);
+        m_XTick3.setStrokeWidth(2);
+        m_XTick4.setStrokeWidth(2);
+        m_XTick5.setStrokeWidth(2);
+    }
+
+    private void initXTicksBox()
+    {
+        m_XTicksBox = new HBox(m_XTick1, m_XTicksHorizonatlSpacer1, m_XTick2, m_XTicksHorizontalSpacer2, m_XTick3, m_XTicksHorizontalSpacer3, m_XTick4, m_XTicksHorizontalSpacer4,m_XTick5);
+    }
+
+
+    private void initColorBar()
+    {
+        initColorBarSpacers();
+        initColorBarTickText();
+        setColorBarTickTextPosition();
+        setColorBarTickTextFont();
+        setColorBarTickLabelBox();
+        initColorBarGradient();
+        drawColorBar();
+        intiColorBarSpacer();
+    }
+    
+    private void initColorBarSpacers()
     {
         m_CBTicksLabelVerticalSpacer1 = new Region();
         m_CBTicksLabelVerticalSpacer2 = new Region();
@@ -425,48 +611,73 @@ class VectorfieldWidget
         VBox.setVgrow(m_CBTicksLabelVerticalSpacer2, Priority.ALWAYS);
         VBox.setVgrow(m_CBTicksLabelVerticalSpacer3, Priority.ALWAYS);
         VBox.setVgrow(m_CBTicksLabelVerticalSpacer4, Priority.ALWAYS);
+    }
 
-        
+    private void initColorBarTickText()
+    {
         double CBTickDelta = Math.abs(m_MaxVecLen-m_MinVecLen)/4.0;
         m_CBTickText1 = new Text(String.format("%.6f", m_MaxVecLen));
         m_CBTickText2 = new Text(String.format("%.6f", m_MinVecLen+3.0*CBTickDelta));
         m_CBTickText3 = new Text(String.format("%.6f", m_MinVecLen+2.0*CBTickDelta));
         m_CBTickText4 = new Text(String.format("%.6f", m_MinVecLen+CBTickDelta));
         m_CBTickText5 = new Text(String.format("%.6f", m_MinVecLen));
-        
+    }
+
+    private void setColorBarTickTextPosition()
+    {
         m_CBTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
         m_CBTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
         m_CBTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
         m_CBTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
         m_CBTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
+    }
 
+    private void setColorBarTickTextFont()
+    {
         m_CBTickText1.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText2.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText3.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText4.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText5.setFont(new Font(m_FontSizeTickLabels));
+    }
 
+    private void setColorBarTickLabelBox()
+    {
         m_CBTicksLabelBox = new VBox(m_CBTickText1, m_CBTicksLabelVerticalSpacer1, m_CBTickText2, m_CBTicksLabelVerticalSpacer2,m_CBTickText3,m_CBTicksLabelVerticalSpacer3, m_CBTickText4, m_CBTicksLabelVerticalSpacer4, m_CBTickText5);
         m_CBTicksLabelBox.setAlignment(Pos.CENTER_RIGHT);
         m_CBTicksLabelBox.setAlignment(Pos.TOP_RIGHT);
+    }
 
-        Stop[] stops = new Stop[] { new Stop(0, Color.rgb(0,0,255)), new Stop(1, Color.rgb(255,0,0))};
-        LinearGradient lg1 = new LinearGradient(0, 1, 0,0, true, CycleMethod.NO_CYCLE, stops);
-                
+    private void initColorBarGradient()
+    {
+        m_GradientStops = new Stop[] { new Stop(0, Color.rgb(0,0,255)), new Stop(1, Color.rgb(255,0,0))};
+        m_LinearGradient1 = new LinearGradient(0, 1, 0,0, true, CycleMethod.NO_CYCLE, m_GradientStops);
+    }
+
+    private void drawColorBar()
+    {
         m_ColorBar = new Rectangle();
         m_ColorBar.setWidth(20);
         m_ColorBar.setHeight(0.6*m_Height);
         m_ColorBar.setStroke(Color.BLACK);
         m_ColorBar.setStrokeWidth(2);
-        m_ColorBar.setFill(lg1);
+        m_ColorBar.setFill(m_LinearGradient1);
+    }
 
+    private void intiColorBarSpacer()
+    {
         m_SpacerPlotAreaColorBar = new Region();
         m_SpacerPlotAreaColorBar.setMinWidth(5.0);
-
-        
     }
     
-    private void InitPlotAxesRectangle()
+
+    private void initPlotAxesRectangle()
+    {
+        drawAxisRectangle();
+        putAxisRectangleIntoPlottingArea();
+    }
+
+    private void drawAxisRectangle()
     {
         m_PlotAxesRectangle = new Rectangle();
         m_PlotAxesRectangle.setStroke(Color.BLACK);
@@ -475,16 +686,18 @@ class VectorfieldWidget
         m_PlotAxesRectangle.setFill(null);
         m_PlotAxesRectangle.setWidth(0.6*m_Width);  
         m_PlotAxesRectangle.setHeight(0.6*m_Height);
-        
+    }
+
+    private void putAxisRectangleIntoPlottingArea()
+    {
         m_PlotingArea = new StackPane();
         m_Arrows = new Group();
         m_Arrows.getChildren().add(m_PlotAxesRectangle);
         m_PlotingArea.getChildren().add(m_PlotAxesRectangle);
         m_PlotingArea.getChildren().add(m_Arrows);
-                
     }
     
-    private void TransformVectorFieldData()
+    private void transformVectorFieldData()
     {
         m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
         m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
@@ -535,8 +748,142 @@ class VectorfieldWidget
         
 
     }
+        
+    
+    public void PlotVectorField()
+    {
+        adjustSpacersForPlotting();
+        setPlotAxesRectangleAndColorBarDimensions();
+        
+        setXTickText();
+        setXTickTextPosition();
+        putXTickTextToLabelBox();
+        
+        setYTickText();
+        setYTickTextPosition();
+        putYTickTextToLabelBox();
+        
+        setColorBarTickText();
+        setColorBarTickTextPosition();
+        putColorBarTickTextToLabelBox();
+        
+        transformVectorFieldData();
+        drawVectors();
+       
+    }
 
-    private void DrawVectors()
+    private void adjustSpacersForPlotting()
+    {
+        m_MainVerticalSpacerUpper.setMinHeight(0.15*m_Height);
+        m_MainHorizontalSpacerLeft.setMinSize(0.05*m_Width, 0.6*m_Height);
+        m_MainVerticalSpacerLower.setMinHeight(0.15*m_Height);
+        m_MainHorizontalSpacerRight.setMinSize(0.05*m_Width, 0.6*m_Height);
+    }
+
+    private void setPlotAxesRectangleAndColorBarDimensions()
+    {
+        m_PlotAxesRectangle.setWidth(0.6*m_Width);  
+        m_PlotAxesRectangle.setHeight(0.6*m_Height);
+        m_ColorBar.setHeight(0.6*m_Height);
+    }
+
+    private void setXTickText()
+    {
+        double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
+        m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
+        m_XTickText4 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+3.0*XTickDelta));
+        m_XTickText3 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+2.0*XTickDelta));
+        m_XTickText2 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+XTickDelta));
+        m_XTickText1 = new Text(String.format("%.2f", m_MinX-10/m_FactorX));
+    }
+
+    private void setXTickTextPosition()
+    {
+        var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
+        var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
+        var XtickLabelWidth3 = 0.5*m_XTickText3.getText().length();
+        var XtickLabelWidth2 = 0.5*m_XTickText2.getText().length();
+        var XtickLabelWidth1 = 0.5*m_XTickText1.getText().length();
+        m_XTickText1.setTranslateX(-0.3*XtickLabelWidth1*m_FontSizeTickLabels);
+        m_XTickText2.setTranslateX(-0.1*XtickLabelWidth2*m_FontSizeTickLabels);
+        m_XTickText3.setTranslateX(0.2*XtickLabelWidth3*m_FontSizeTickLabels);
+        m_XTickText4.setTranslateX(0.3*XtickLabelWidth4*m_FontSizeTickLabels);
+        m_XTickText5.setTranslateX(0.4*XtickLabelWidth5*m_FontSizeTickLabels);
+    }
+
+    private void putXTickTextToLabelBox()
+    {
+        m_XTicksLabelBox.getChildren().clear();
+        
+        m_XTicksLabelBox.getChildren().add(m_XTickText1);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer1);
+        m_XTicksLabelBox.getChildren().add(m_XTickText2);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer2);
+        m_XTicksLabelBox.getChildren().add(m_XTickText3);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer3);
+        m_XTicksLabelBox.getChildren().add(m_XTickText4);
+        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer4);
+        m_XTicksLabelBox.getChildren().add(m_XTickText5);
+    }
+
+    private void setYTickText()
+    {
+        double YTickDelta = Math.abs(m_MaxY-m_MinY+20/m_FactorY)/4.0;
+        m_YTickText1 = new Text(String.format("%.2f", m_MaxY+10/m_FactorY));
+        m_YTickText2 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+3.0*YTickDelta));
+        m_YTickText3 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+2.0*YTickDelta));
+        m_YTickText4 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+YTickDelta));
+        m_YTickText5 = new Text(String.format("%.2f", m_MinY-10/m_FactorY));
+    }
+
+    private void setYTickTextPosition()
+    {
+        m_YTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
+        m_YTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
+        m_YTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
+        m_YTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
+        m_YTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
+    }
+
+    private void putYTickTextToLabelBox()
+    {
+        m_YTicksLabelBox.getChildren().clear();
+        m_YTicksLabelBox.getChildren().add(m_YTickText1);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer1);
+        m_YTicksLabelBox.getChildren().add(m_YTickText2);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer2);
+        m_YTicksLabelBox.getChildren().add(m_YTickText3);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer3);
+        m_YTicksLabelBox.getChildren().add(m_YTickText4);
+        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer4);
+        m_YTicksLabelBox.getChildren().add(m_YTickText5);
+    }
+
+    private void setColorBarTickText()
+    {
+        double CBTickDelta = Math.abs(m_MaxVecLen-m_MinVecLen)/4.0;
+        m_CBTickText1 = new Text(String.format("%.6f", m_MaxVecLen));
+        m_CBTickText2 = new Text(String.format("%.6f", m_MinVecLen+3.0*CBTickDelta));
+        m_CBTickText3 = new Text(String.format("%.6f", m_MinVecLen+2.0*CBTickDelta));
+        m_CBTickText4 = new Text(String.format("%.6f", m_MinVecLen+CBTickDelta));
+        m_CBTickText5 = new Text(String.format("%.6f", m_MinVecLen));
+    }
+
+    private void putColorBarTickTextToLabelBox()
+    {
+        m_CBTicksLabelBox.getChildren().clear();
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText1);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer1);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText2);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer2);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText3);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer3);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText4);
+        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer4);
+        m_CBTicksLabelBox.getChildren().add(m_CBTickText5);
+    }
+
+    private void drawVectors()
     {
         
         if(m_Arrows!=null)
@@ -557,172 +904,34 @@ class VectorfieldWidget
         
     }
 
-    private void InitVectorField()
-    {
-        
-        m_MainVerticalSpacerUpper = new Region();
-        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
-
-        m_MainVerticalSpacerLower = new Region();
-        VBox.setVgrow(m_MainVerticalSpacerUpper, Priority.ALWAYS);
-
-        m_MainHorizontalSpacerLeft = new Region();
-        HBox.setHgrow(m_MainHorizontalSpacerLeft, Priority.ALWAYS);
-
-        m_MainHorizontalSpacerRight = new Region();
-        HBox.setHgrow(m_MainHorizontalSpacerRight, Priority.ALWAYS);
-                        
-        InitPlotName();
-        InitYAxis();
-        InitXAxis();
-        InitColorBar();
-        InitPlotAxesRectangle();
-        TransformVectorFieldData();
-        DrawVectors();
-
-        m_Canvas = new Group();
-
-        m_Grid = new GridPane();
-        
-        m_Grid.add(m_PlotLabelBox, 4, 1);
-        m_Grid.add(m_PlotingArea, 4, 2);
-        m_Grid.add(m_SpacerPlotAreaColorBar,5, 2);
-        m_Grid.add(m_ColorBar, 6, 2);
-        m_Grid.add(m_CBTicksLabelBox, 7, 2);
-        m_Grid.add(m_XTicksBox, 4, 3);
-        m_Grid.add(m_XTicksLabelBox, 4, 4);
-        m_Grid.add(m_XLabelBox, 4, 5);
-        m_Grid.add(m_YTicksBox, 3, 2);
-        m_Grid.add(m_YTicksLabelBox, 2, 2);
-        m_Grid.add(m_YLabelBox, 1, 2);
-        
-        m_Canvas.getChildren().add(m_Grid);
-        m_ParrentPane.getChildren().add(m_Canvas);
-        
-    }
-    
-    public void PlotVectorField()
-    {
-        
-        m_MainVerticalSpacerUpper.setMinHeight(0.15*m_Height);
-        m_MainHorizontalSpacerLeft.setMinSize(0.05*m_Width, 0.6*m_Height);
-        m_MainVerticalSpacerLower.setMinHeight(0.15*m_Height);
-        m_MainHorizontalSpacerRight.setMinSize(0.05*m_Width, 0.6*m_Height);
-        m_PlotAxesRectangle.setWidth(0.6*m_Width);  
-        m_PlotAxesRectangle.setHeight(0.6*m_Height);
-        m_ColorBar.setHeight(0.6*m_Height);
-
-        double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
-        m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
-        m_XTickText4 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+3.0*XTickDelta));
-        m_XTickText3 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+2.0*XTickDelta));
-        m_XTickText2 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+XTickDelta));
-        m_XTickText1 = new Text(String.format("%.2f", m_MinX-10/m_FactorX));
-                
-        var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
-        var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
-        var XtickLabelWidth3 = 0.5*m_XTickText3.getText().length();
-        var XtickLabelWidth2 = 0.5*m_XTickText2.getText().length();
-        var XtickLabelWidth1 = 0.5*m_XTickText1.getText().length();
-        m_XTickText1.setTranslateX(-0.3*XtickLabelWidth1*m_FontSizeTickLabels);
-        m_XTickText2.setTranslateX(-0.1*XtickLabelWidth2*m_FontSizeTickLabels);
-        m_XTickText3.setTranslateX(0.2*XtickLabelWidth3*m_FontSizeTickLabels);
-        m_XTickText4.setTranslateX(0.3*XtickLabelWidth4*m_FontSizeTickLabels);
-        m_XTickText5.setTranslateX(0.4*XtickLabelWidth5*m_FontSizeTickLabels);
-        
-        
-        m_XTicksLabelBox.getChildren().clear();
-        
-        m_XTicksLabelBox.getChildren().add(m_XTickText1);
-        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer1);
-        m_XTicksLabelBox.getChildren().add(m_XTickText2);
-        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer2);
-        m_XTicksLabelBox.getChildren().add(m_XTickText3);
-        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer3);
-        m_XTicksLabelBox.getChildren().add(m_XTickText4);
-        m_XTicksLabelBox.getChildren().add(m_XTicksLabelHorizontalSpacer4);
-        m_XTicksLabelBox.getChildren().add(m_XTickText5);
-        
-        
-
-        double YTickDelta = Math.abs(m_MaxY-m_MinY+20/m_FactorY)/4.0;
-        m_YTickText1 = new Text(String.format("%.2f", m_MaxY+10/m_FactorY));
-        m_YTickText2 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+3.0*YTickDelta));
-        m_YTickText3 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+2.0*YTickDelta));
-        m_YTickText4 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+YTickDelta));
-        m_YTickText5 = new Text(String.format("%.2f", m_MinY-10/m_FactorY));
-        
-        m_YTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
-        m_YTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
-        m_YTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
-        m_YTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
-        m_YTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
-
-        m_YTicksLabelBox.getChildren().clear();
-        m_YTicksLabelBox.getChildren().add(m_YTickText1);
-        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer1);
-        m_YTicksLabelBox.getChildren().add(m_YTickText2);
-        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer2);
-        m_YTicksLabelBox.getChildren().add(m_YTickText3);
-        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer3);
-        m_YTicksLabelBox.getChildren().add(m_YTickText4);
-        m_YTicksLabelBox.getChildren().add(m_YTicksLabelVerticalSpacer4);
-        m_YTicksLabelBox.getChildren().add(m_YTickText5);
-
-        double CBTickDelta = Math.abs(m_MaxVecLen-m_MinVecLen)/4.0;
-        m_CBTickText1 = new Text(String.format("%.6f", m_MaxVecLen));
-        m_CBTickText2 = new Text(String.format("%.6f", m_MinVecLen+3.0*CBTickDelta));
-        m_CBTickText3 = new Text(String.format("%.6f", m_MinVecLen+2.0*CBTickDelta));
-        m_CBTickText4 = new Text(String.format("%.6f", m_MinVecLen+CBTickDelta));
-        m_CBTickText5 = new Text(String.format("%.6f", m_MinVecLen));
-        
-        m_CBTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
-        m_CBTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
-        m_CBTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
-        m_CBTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
-        m_CBTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
-        
-        m_CBTicksLabelBox.getChildren().clear();
-        m_CBTicksLabelBox.getChildren().add(m_CBTickText1);
-        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer1);
-        m_CBTicksLabelBox.getChildren().add(m_CBTickText2);
-        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer2);
-        m_CBTicksLabelBox.getChildren().add(m_CBTickText3);
-        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer3);
-        m_CBTicksLabelBox.getChildren().add(m_CBTickText4);
-        m_CBTicksLabelBox.getChildren().add(m_CBTicksLabelVerticalSpacer4);
-        m_CBTicksLabelBox.getChildren().add(m_CBTickText5);
-        
-        TransformVectorFieldData();
-        DrawVectors();
-       
-    }
-
-    public void SetFontSizeTickLabels(int FontSizeTickLabels)
+    public void setFontSizeTickLabels(int FontSizeTickLabels)
     {
         m_FontSizeTickLabels = FontSizeTickLabels;
     }
-    public void SetFontSizeAxisLabels(int FontSizeAxisLabels)
+    
+    public void setFontSizeAxisLabels(int FontSizeAxisLabels)
     {
         m_FontSizeAxisLabels = FontSizeAxisLabels;
     }
-    public void SetScaleFactor(double ScaleFactor)
+    
+    public void setScaleFactor(double ScaleFactor)
     {
         m_PrevVecDScale = m_VecDScale;
         m_VecDScale = ScaleFactor;
     }
 
-    public void SetXAxisName(String XAxisName)
+    public void setXAxisName(String XAxisName)
     {
         m_XAxisName = XAxisName;
     }
 
-    public void SetYAxisName(String YAxisName)
+    public void setYAxisName(String YAxisName)
     {
         m_YAxisName = YAxisName;
     }
-
-    public void SetVectorFieldData(ArrayList<Double[]> VectorFieldData)
+   
+    
+    public void setVectorFieldData(ArrayList<Double[]> VectorFieldData)
     {
         if(m_VectorFieldData!=null)
         {
@@ -731,6 +940,31 @@ class VectorfieldWidget
         m_VectorFieldData = null;
         m_VectorFieldData = VectorFieldData;
         
+        refreshData(true);
+    } 
+
+    public void refreshData(boolean... setData )
+    {
+                
+        initCoordinateRanges();
+        
+        for(var vectorElem : m_VectorFieldData)
+        {
+            if(setData.length == 0)
+            {
+                vectorElem[2] = vectorElem[0]+(vectorElem[2]-vectorElem[0])/m_PrevVecDScale;
+                vectorElem[3] = vectorElem[1]+(vectorElem[3]-vectorElem[1])/m_PrevVecDScale;
+            }
+            calculateActualVectorLength(vectorElem);
+
+            rescaleVectorElement(vectorElem);
+            
+        }
+        recalculateFactors();
+    }
+
+    public void initCoordinateRanges()
+    {
         m_MaxX = -Double.MAX_VALUE;
         m_MinX = Double.MAX_VALUE;
         m_MaxY = -Double.MAX_VALUE;
@@ -738,147 +972,80 @@ class VectorfieldWidget
 
         m_MaxVecLen = Double.MIN_VALUE;
         m_MinVecLen = Double.MAX_VALUE;
-        
-        for(var VectorElem : m_VectorFieldData)
-        {
-            double ActVecLen = Math.sqrt(Math.pow((VectorElem[2]-VectorElem[0]), 2)+Math.pow((VectorElem[3]-VectorElem[1]), 2));
-
-            if(ActVecLen>m_MaxVecLen)
-            {
-                m_MaxVecLen = ActVecLen;
-            }
-            if(ActVecLen<m_MinVecLen)
-            {
-                m_MinVecLen = ActVecLen;
-            }
-
-            VectorElem[2] = VectorElem[0]+(VectorElem[2]-VectorElem[0])*m_VecDScale;
-            VectorElem[3] = VectorElem[1]+(VectorElem[3]-VectorElem[1])*m_VecDScale;
-
-            if(VectorElem[0]>m_MaxX)
-            {
-                m_MaxX = VectorElem[0];
-            }
-            if(VectorElem[0]<m_MinX)
-            {
-                m_MinX = VectorElem[0];
-            }
-            if(VectorElem[1]>m_MaxY)
-            {
-                m_MaxY = VectorElem[1];
-            }
-            if(VectorElem[1]<m_MinY)
-            {
-                m_MinY = VectorElem[1];
-            }
-
-            if(VectorElem[2]>m_MaxX)
-            {
-                m_MaxX = VectorElem[2];
-            }
-            if(VectorElem[2]<m_MinX)
-            {
-                m_MinX = VectorElem[2];
-            }
-            if(VectorElem[3]>m_MaxY)
-            {
-                m_MaxY = VectorElem[3];
-            }
-            if(VectorElem[3]<m_MinY)
-            {
-                m_MinY = VectorElem[3];
-            }
-            
-        }
-        m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
-        m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
-
-        
-    } 
-    public void RefreshData()
-    {
-                
-        m_MaxX = -Double.MAX_VALUE;
-        m_MinX = Double.MAX_VALUE;
-        m_MaxY = -Double.MAX_VALUE;
-        m_MinY = Double.MAX_VALUE;
-
-        m_MaxVecLen = -Double.MAX_VALUE;
-        m_MinVecLen = Double.MAX_VALUE;
-        
-        for(var VectorElem : m_VectorFieldData)
-        {
-            
-
-            VectorElem[2] = VectorElem[0]+(VectorElem[2]-VectorElem[0])/m_PrevVecDScale;
-            VectorElem[3] = VectorElem[1]+(VectorElem[3]-VectorElem[1])/m_PrevVecDScale;
-
-            double ActVecLen = Math.sqrt(Math.pow((VectorElem[2]-VectorElem[0]), 2)+Math.pow((VectorElem[3]-VectorElem[1]), 2));
-
-            if(ActVecLen>m_MaxVecLen)
-            {
-                m_MaxVecLen = ActVecLen;
-            }
-            if(ActVecLen<m_MinVecLen)
-            {
-                m_MinVecLen = ActVecLen;
-            }
-
-            VectorElem[2] = VectorElem[0]+(VectorElem[2]-VectorElem[0])*m_VecDScale;
-            VectorElem[3] = VectorElem[1]+(VectorElem[3]-VectorElem[1])*m_VecDScale;
-
-            if(VectorElem[0]>m_MaxX)
-            {
-                m_MaxX = VectorElem[0];
-            }
-            if(VectorElem[0]<m_MinX)
-            {
-                m_MinX = VectorElem[0];
-            }
-            if(VectorElem[1]>m_MaxY)
-            {
-                m_MaxY = VectorElem[1];
-            }
-            if(VectorElem[1]<m_MinY)
-            {
-                m_MinY = VectorElem[1];
-            }
-
-            if(VectorElem[2]>m_MaxX)
-            {
-                m_MaxX = VectorElem[2];
-            }
-            if(VectorElem[2]<m_MinX)
-            {
-                m_MinX = VectorElem[2];
-            }
-            if(VectorElem[3]>m_MaxY)
-            {
-                m_MaxY = VectorElem[3];
-            }
-            if(VectorElem[3]<m_MinY)
-            {
-                m_MinY = VectorElem[3];
-            }
-            
-            
-        }
-        m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
-        m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
-
-        
-
     }
-    public ArrayList<Double[]> GetData()
+
+    private void calculateActualVectorLength(Double[] vectorElem)
+    {
+        m_ActVecLen = Math.sqrt(Math.pow((vectorElem[2]-vectorElem[0]), 2)+Math.pow((vectorElem[3]-vectorElem[1]), 2));
+
+        if(m_ActVecLen>m_MaxVecLen)
+        {
+            m_MaxVecLen = m_ActVecLen;
+        }
+        if(m_ActVecLen<m_MinVecLen)
+        {
+            m_MinVecLen = m_ActVecLen;
+        }
+    }
+
+    private void rescaleVectorElement(Double[] vectorElem)
+    {
+        vectorElem[2] = vectorElem[0]+(vectorElem[2]-vectorElem[0])*m_VecDScale;
+        vectorElem[3] = vectorElem[1]+(vectorElem[3]-vectorElem[1])*m_VecDScale;
+
+        if(vectorElem[0]>m_MaxX)
+        {
+            m_MaxX = vectorElem[0];
+        }
+        if(vectorElem[0]<m_MinX)
+        {
+            m_MinX = vectorElem[0];
+        }
+        if(vectorElem[1]>m_MaxY)
+        {
+            m_MaxY = vectorElem[1];
+        }
+        if(vectorElem[1]<m_MinY)
+        {
+            m_MinY = vectorElem[1];
+        }
+
+        if(vectorElem[2]>m_MaxX)
+        {
+            m_MaxX = vectorElem[2];
+        }
+        if(vectorElem[2]<m_MinX)
+        {
+            m_MinX = vectorElem[2];
+        }
+        if(vectorElem[3]>m_MaxY)
+        {
+            m_MaxY = vectorElem[3];
+        }
+        if(vectorElem[3]<m_MinY)
+        {
+            m_MinY = vectorElem[3];
+        }
+    }    
+
+    public void recalculateFactors()
+    {
+        m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
+        m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
+    }
+
+
+    public ArrayList<Double[]> getData()
     {
         return m_VectorFieldData;
     }
-    public void SetWidth(double Width)
+    
+    public void setWidth(double Width)
     {
         m_Width = Width;
     }
 
-    public void SetHeight(double Height)
+    public void setHeight(double Height)
     {
         m_Height = Height;
     }
