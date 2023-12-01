@@ -457,68 +457,64 @@ class VectorfieldWidget
     }
 
     
+    
     private void initXAxis()
+    {
+        initXAxisLabel();
+        initXLabelBox();
+        initXTickLabelSpacers();
+        initXTicksText();
+        setXTicksTextPosition();
+        setXTicksTextFont();
+        initXTicksSpacers();
+        setXTicksLabelBox();
+        initXTicksDrawing();
+        setXTickDrawingLength();
+        setXTickDrawingWidth();
+        initXTicksBox();
+    }
+
+    private void initXAxisLabel()
     {
         m_XAxisLabel = new Text(m_XAxisName);
         m_XAxisLabel.setFont(new Font(m_FontSizeAxisLabels));
-        
+    }
+
+    private void initXLabelBox()
+    {
         m_XLabelHorizontalSpacerLeft = new Region();
         m_XLabelHorizontalSpacerRight = new Region();
         
         m_XLabelBox = new HBox(m_XLabelHorizontalSpacerLeft, m_XAxisLabel, m_XLabelHorizontalSpacerRight);
         HBox.setHgrow(m_XLabelHorizontalSpacerLeft, Priority.ALWAYS);
         HBox.setHgrow(m_XLabelHorizontalSpacerRight, Priority.ALWAYS);
-        
-        m_XTick1 = new Line();
-        m_XTick2 = new Line();
-        m_XTick3 = new Line();
-        m_XTick4 = new Line();
-        m_XTick5 = new Line();
-        
-        m_XTick1.setEndY(3.0);
-        m_XTick2.setEndY(3.0);
-        m_XTick3.setEndY(3.0);
-        m_XTick4.setEndY(3.0);
-        m_XTick5.setEndY(3.0);
-        
-        m_XTick1.setStrokeWidth(2);
-        m_XTick2.setStrokeWidth(2);
-        m_XTick3.setStrokeWidth(2);
-        m_XTick4.setStrokeWidth(2);
-        m_XTick5.setStrokeWidth(2);
-        
+    }
+
+    private void initXTickLabelSpacers()
+    {
         m_XTicksHorizonatlSpacer1 = new Region();
         m_XTicksHorizontalSpacer2 = new Region();
         m_XTicksHorizontalSpacer3 = new Region();
         m_XTicksHorizontalSpacer4 = new Region();
        
-        
-        
-        
         HBox.setHgrow(m_XTicksHorizonatlSpacer1, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer2, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer3, Priority.ALWAYS);
         HBox.setHgrow(m_XTicksHorizontalSpacer4, Priority.ALWAYS);
+    }
 
-        m_XTicksBox = new HBox(m_XTick1, m_XTicksHorizonatlSpacer1, m_XTick2, m_XTicksHorizontalSpacer2, m_XTick3, m_XTicksHorizontalSpacer3, m_XTick4, m_XTicksHorizontalSpacer4,m_XTick5);
-
-
-        m_XTicksLabelHorizontalSpacer1 = new Region();
-        m_XTicksLabelHorizontalSpacer2 = new Region();
-        m_XTicksLabelHorizontalSpacer3 = new Region();
-        m_XTicksLabelHorizontalSpacer4 = new Region();
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer1, Priority.ALWAYS);
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer2, Priority.ALWAYS);
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer3, Priority.ALWAYS);
-        HBox.setHgrow(m_XTicksLabelHorizontalSpacer4, Priority.ALWAYS);
-
+    private void initXTicksText()
+    {
         double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
         m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
         m_XTickText4 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+3.0*XTickDelta));
         m_XTickText3 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+2.0*XTickDelta));
         m_XTickText2 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+XTickDelta));
         m_XTickText1 = new Text(String.format("%.2f", m_MinX-10/m_FactorX));
-        
+    }
+
+    private void setXTicksTextPosition()
+    {
         var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
         var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
         var XtickLabelWidth3 = 0.5*m_XTickText3.getText().length();
@@ -529,16 +525,66 @@ class VectorfieldWidget
         m_XTickText3.setTranslateX(0.2*XtickLabelWidth3*m_FontSizeTickLabels);
         m_XTickText4.setTranslateX(0.3*XtickLabelWidth4*m_FontSizeTickLabels);
         m_XTickText5.setTranslateX(0.4*XtickLabelWidth5*m_FontSizeTickLabels);
+    }
 
+    private void setXTicksTextFont()
+    {
         m_XTickText1.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText2.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText3.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText4.setFont(new Font(m_FontSizeTickLabels));
         m_XTickText5.setFont(new Font(m_FontSizeTickLabels));
+    }
 
+    private void setXTicksLabelBox()
+    {
         m_XTicksLabelBox = new HBox(m_XTickText1, m_XTicksLabelHorizontalSpacer1, m_XTickText2, m_XTicksLabelHorizontalSpacer2,m_XTickText3,m_XTicksLabelHorizontalSpacer3, m_XTickText4, m_XTicksLabelHorizontalSpacer4, m_XTickText5);
         m_XTicksLabelBox.setAlignment(Pos.CENTER_RIGHT);
         m_XTicksLabelBox.setAlignment(Pos.TOP_RIGHT);
+    }
+    
+    private void initXTicksSpacers()
+    {
+        m_XTicksLabelHorizontalSpacer1 = new Region();
+        m_XTicksLabelHorizontalSpacer2 = new Region();
+        m_XTicksLabelHorizontalSpacer3 = new Region();
+        m_XTicksLabelHorizontalSpacer4 = new Region();
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer1, Priority.ALWAYS);
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer2, Priority.ALWAYS);
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer3, Priority.ALWAYS);
+        HBox.setHgrow(m_XTicksLabelHorizontalSpacer4, Priority.ALWAYS);
+    }
+
+    private void initXTicksDrawing()
+    {
+        m_XTick1 = new Line();
+        m_XTick2 = new Line();
+        m_XTick3 = new Line();
+        m_XTick4 = new Line();
+        m_XTick5 = new Line();
+    }
+
+    private void setXTickDrawingLength()
+    {
+        m_XTick1.setEndY(3.0);
+        m_XTick2.setEndY(3.0);
+        m_XTick3.setEndY(3.0);
+        m_XTick4.setEndY(3.0);
+        m_XTick5.setEndY(3.0);
+    }
+
+    private void setXTickDrawingWidth()
+    {
+        m_XTick1.setStrokeWidth(2);
+        m_XTick2.setStrokeWidth(2);
+        m_XTick3.setStrokeWidth(2);
+        m_XTick4.setStrokeWidth(2);
+        m_XTick5.setStrokeWidth(2);
+    }
+
+    private void initXTicksBox()
+    {
+        m_XTicksBox = new HBox(m_XTick1, m_XTicksHorizonatlSpacer1, m_XTick2, m_XTicksHorizontalSpacer2, m_XTick3, m_XTicksHorizontalSpacer3, m_XTick4, m_XTicksHorizontalSpacer4,m_XTick5);
     }
 
     private void initColorBar()
