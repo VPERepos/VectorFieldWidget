@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import java.util.TimerTask;
@@ -427,7 +428,6 @@ public class App extends Application {
             m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_NumOfPoints = Integer.parseInt(m_NumOfPointsPar.getText());
             m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
-            
             m_VectorField.PlotVectorField();
         });
     }
