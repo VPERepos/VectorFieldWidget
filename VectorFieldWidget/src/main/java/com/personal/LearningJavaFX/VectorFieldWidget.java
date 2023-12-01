@@ -208,8 +208,8 @@ class VectorfieldWidget
     private StackPane m_PlotingArea;
     private Group m_Arrows;
 
-    double m_FactorX;
-    double m_FactorY;
+    private double m_FactorX;
+    private double m_FactorY;
 
     private LinearGradient m_LinearGradient1;
     private Stop[] m_GradientStops;
@@ -669,7 +669,14 @@ class VectorfieldWidget
     }
 
     
+
     private void initPlotAxesRectangle()
+    {
+        drawAxisRectangle();
+        putAxisRectangleIntoPlottingArea();
+    }
+
+    private void drawAxisRectangle()
     {
         m_PlotAxesRectangle = new Rectangle();
         m_PlotAxesRectangle.setStroke(Color.BLACK);
@@ -678,13 +685,15 @@ class VectorfieldWidget
         m_PlotAxesRectangle.setFill(null);
         m_PlotAxesRectangle.setWidth(0.6*m_Width);  
         m_PlotAxesRectangle.setHeight(0.6*m_Height);
-        
+    }
+
+    private void putAxisRectangleIntoPlottingArea()
+    {
         m_PlotingArea = new StackPane();
         m_Arrows = new Group();
         m_Arrows.getChildren().add(m_PlotAxesRectangle);
         m_PlotingArea.getChildren().add(m_PlotAxesRectangle);
         m_PlotingArea.getChildren().add(m_Arrows);
-                
     }
     
     private void transformVectorFieldData()
