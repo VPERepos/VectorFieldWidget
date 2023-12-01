@@ -70,14 +70,12 @@ public class App extends Application {
                     
         public PeriodicDataGenerator()
         {
-                            
+            parseParametersFromGuiControls();                   
         }
         
         @Override
         public void run()
         {
-            parseParametersFromGuiControls();
-
             m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
             m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
                             
@@ -424,21 +422,27 @@ public class App extends Application {
     private void setNumberOfPointsOnAction()
     {
         m_NumOfPointsPar.setOnAction(e->{
-            
-            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
-            m_NumOfPoints = Integer.parseInt(m_NumOfPointsPar.getText());
-            m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
-            m_VectorField.PlotVectorField();
+            var value = Double.parseDouble(m_ScalingFactorPar.getText());
+            if(value > 0.0)
+            {
+                m_VectorField.setScaleFactor(value);
+                m_NumOfPoints = Integer.parseInt(m_NumOfPointsPar.getText());
+                m_VectorField.setVectorFieldData(GenerateVectorFieldData(m_Xmin,m_Xmax,m_Ymin,m_Ymax,m_dXmin,m_dXmax,m_dYmin,m_dYmax,m_NumOfPoints));
+                m_VectorField.PlotVectorField();
+            }
         });
     }
 
     private void setScalingFactorOnAction()
     {
         m_ScalingFactorPar.setOnAction(e->{
-            
-            m_VectorField.setScaleFactor(Double.parseDouble(m_ScalingFactorPar.getText()));
-            m_VectorField.refreshData();
-            m_VectorField.PlotVectorField();
+            var value = Double.parseDouble(m_ScalingFactorPar.getText());
+            if(value > 0.0)
+            {
+                m_VectorField.setScaleFactor(value);
+                m_VectorField.refreshData();
+                m_VectorField.PlotVectorField();
+            }
         });
     }
 
