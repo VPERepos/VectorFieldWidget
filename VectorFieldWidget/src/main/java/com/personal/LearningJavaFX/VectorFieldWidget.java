@@ -211,7 +211,8 @@ class VectorfieldWidget
     double m_FactorX;
     double m_FactorY;
 
-    
+    private LinearGradient m_LinearGradient1;
+    private Stop[] m_GradientStops;
 
 	public VectorfieldWidget(Pane ParrentPane)
     {
@@ -455,8 +456,6 @@ class VectorfieldWidget
     {
         m_YTicksBox = new VBox(m_YTick1, m_YTicksVerticalSpacer1, m_YTick2, m_YTicksVerticalSpacer2, m_YTick3, m_YTicksVerticalSpacer3, m_YTick4, m_YTicksVerticalSpacer4, m_YTick5); 
     }
-
-    
     
     private void initXAxis()
     {
@@ -587,7 +586,20 @@ class VectorfieldWidget
         m_XTicksBox = new HBox(m_XTick1, m_XTicksHorizonatlSpacer1, m_XTick2, m_XTicksHorizontalSpacer2, m_XTick3, m_XTicksHorizontalSpacer3, m_XTick4, m_XTicksHorizontalSpacer4,m_XTick5);
     }
 
+
     private void initColorBar()
+    {
+        initColorBarSpacers();
+        initColorBarTickText();
+        setColorBarTickTextPosition();
+        setColorBarTickTextFont();
+        setColorBarTickLabelBox();
+        initColorBarGradient();
+        drawColorBar();
+        intiColorBarSpacer();
+    }
+    
+    private void initColorBarSpacers()
     {
         m_CBTicksLabelVerticalSpacer1 = new Region();
         m_CBTicksLabelVerticalSpacer2 = new Region();
@@ -597,46 +609,65 @@ class VectorfieldWidget
         VBox.setVgrow(m_CBTicksLabelVerticalSpacer2, Priority.ALWAYS);
         VBox.setVgrow(m_CBTicksLabelVerticalSpacer3, Priority.ALWAYS);
         VBox.setVgrow(m_CBTicksLabelVerticalSpacer4, Priority.ALWAYS);
+    }
 
-        
+    private void initColorBarTickText()
+    {
         double CBTickDelta = Math.abs(m_MaxVecLen-m_MinVecLen)/4.0;
         m_CBTickText1 = new Text(String.format("%.6f", m_MaxVecLen));
         m_CBTickText2 = new Text(String.format("%.6f", m_MinVecLen+3.0*CBTickDelta));
         m_CBTickText3 = new Text(String.format("%.6f", m_MinVecLen+2.0*CBTickDelta));
         m_CBTickText4 = new Text(String.format("%.6f", m_MinVecLen+CBTickDelta));
         m_CBTickText5 = new Text(String.format("%.6f", m_MinVecLen));
-        
+    }
+
+    private void setColorBarTickTextPosition()
+    {
         m_CBTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
         m_CBTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
         m_CBTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
         m_CBTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
         m_CBTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
+    }
 
+    private void setColorBarTickTextFont()
+    {
         m_CBTickText1.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText2.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText3.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText4.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText5.setFont(new Font(m_FontSizeTickLabels));
+    }
 
+    private void setColorBarTickLabelBox()
+    {
         m_CBTicksLabelBox = new VBox(m_CBTickText1, m_CBTicksLabelVerticalSpacer1, m_CBTickText2, m_CBTicksLabelVerticalSpacer2,m_CBTickText3,m_CBTicksLabelVerticalSpacer3, m_CBTickText4, m_CBTicksLabelVerticalSpacer4, m_CBTickText5);
         m_CBTicksLabelBox.setAlignment(Pos.CENTER_RIGHT);
         m_CBTicksLabelBox.setAlignment(Pos.TOP_RIGHT);
+    }
 
-        Stop[] stops = new Stop[] { new Stop(0, Color.rgb(0,0,255)), new Stop(1, Color.rgb(255,0,0))};
-        LinearGradient lg1 = new LinearGradient(0, 1, 0,0, true, CycleMethod.NO_CYCLE, stops);
-                
+    private void initColorBarGradient()
+    {
+        m_GradientStops = new Stop[] { new Stop(0, Color.rgb(0,0,255)), new Stop(1, Color.rgb(255,0,0))};
+        m_LinearGradient1 = new LinearGradient(0, 1, 0,0, true, CycleMethod.NO_CYCLE, m_GradientStops);
+    }
+
+    private void drawColorBar()
+    {
         m_ColorBar = new Rectangle();
         m_ColorBar.setWidth(20);
         m_ColorBar.setHeight(0.6*m_Height);
         m_ColorBar.setStroke(Color.BLACK);
         m_ColorBar.setStrokeWidth(2);
-        m_ColorBar.setFill(lg1);
+        m_ColorBar.setFill(m_LinearGradient1);
+    }
 
+    private void intiColorBarSpacer()
+    {
         m_SpacerPlotAreaColorBar = new Region();
         m_SpacerPlotAreaColorBar.setMinWidth(5.0);
-
-        
     }
+
     
     private void initPlotAxesRectangle()
     {
