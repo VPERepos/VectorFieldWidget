@@ -83,7 +83,7 @@ class VectorfieldWidget
             }
         }
     
-        public Group CreateArrow()
+        public Group createArrow()
         {
             return new Group(m_Middle,m_Triangle);
         }
@@ -898,7 +898,7 @@ class VectorfieldWidget
             
             var ReverseRatio = (m_MinVecLenTransformed/ActVectorLength);
             var Arrow = new Arrow(new Point2D(Elem[0],Elem[1]), new Point2D(Elem[2],Elem[3]), Color.rgb((int)(DirectRatio*255),0,(int)(ReverseRatio*255)), 0.5); 
-            m_Arrows.getChildren().add(Arrow.CreateArrow());
+            m_Arrows.getChildren().add(Arrow.createArrow());
             
         }
         
@@ -1028,7 +1028,7 @@ class VectorfieldWidget
         }
     }    
 
-    public void recalculateFactors()
+    private void recalculateFactors()
     {
         m_FactorX = (m_PlotAxesRectangle.getWidth()-20)/(m_MaxX-m_MinX);
         m_FactorY = (m_PlotAxesRectangle.getHeight()-20)/(m_MaxY-m_MinY);
