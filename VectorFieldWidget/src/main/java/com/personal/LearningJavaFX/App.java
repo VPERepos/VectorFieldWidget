@@ -10,7 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import java.util.TimerTask;
@@ -475,7 +474,7 @@ public class App extends Application {
         stage.show();
     }
 
-    public ArrayList<Double[]> GenerateVectorFieldData(double Xmin,double Xmax, double Ymin,double Ymax, double dXmin, double dXmax, double dYmin, double dYmax, int NumOfPoints)
+    private ArrayList<Double[]> GenerateVectorFieldData(double Xmin,double Xmax, double Ymin,double Ymax, double dXmin, double dXmax, double dYmin, double dYmax, int NumOfPoints)
     {
         ArrayList<Double[]> SampleData = new ArrayList<Double[]>();
         
