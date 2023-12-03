@@ -1,0 +1,61 @@
+@startuml
+skinparam monochrome true
+skinparam classAttributeIconSize 0
+actor User
+participant "App:main()" as A
+participant "VectorFieldWidget:m_VectorField" as B
+participant "Arrow:arrow" as C
+participant "Timer:m_Timer" as D
+User -> A **: starts the application
+activate A
+A -> A : launch()
+A -> A : start()
+Activate A
+A -> A : initializeRootPane()
+A -> A : initializeChildrenPanes()
+A -> A : initializeParametersHolder()
+A -> A : addXminToParametersHolder()
+A -> A : addXmaxToParametersHolder()
+A -> A : addYminToParametersHolder()
+A -> A : addYmaxToParametersHolder()
+A -> A : addDeltaXminToParametersHolder()
+A -> A : addDeltaXmaxToParametersHolder()
+A -> A : addDeltaYminToParametersHolder()
+A -> A : addDeltaYmaxToParametersHolder()
+A -> A : addNumOfPointsToParametersHolder()
+A -> A : addParametersHolderToParametersPane()
+A -> A : addAppModeComboBoxToParametersHolder()
+A -> A : addRefreshingRateToParametersHolder()
+A -> A : addScalingFactorToParametersHolder()
+A -> A : parseParametersFromGuiControls()
+A -> A : initializeVectorField()
+activate A
+A -> B **: VectorFieldWidget()
+activate B
+B -> B : initPlotAndAxisNames()
+B -> B : initFontSizes()
+B -> B : setInitialMinAndMaxValues()
+B -> B : initParrentPane()
+B -> B : initVectorFieldData()
+B -> B : initVectorField()
+activate B
+B -> B : initSpacers()
+B -> B : initPlotName()
+B -> B : initYAxis()
+activate B
+B -> B : initYAxisLabel()
+B -> B : initYLabelBox()
+B -> B : initYTickLabelSpacers()
+B -> B : initYTicksText()
+B -> B : setYTicksTextPosition()
+B -> B : setYTicksTextFont()
+B -> B : initYTicksLabelBox()
+B -> B : initYTicksSpacers()
+B -> B : initYTickDrawing()
+B -> B : setYTickDrawingLength()
+B -> B : setYTickDrawingWidth()
+B -> B : initYTicksBox()
+deactivate B
+B -> B : initXAxis()
+activate B
+@enduml

@@ -319,7 +319,8 @@ public class App extends Application {
             else
             {
                 m_Timer = new Timer();
-                m_Timer.schedule(new PeriodicDataGenerator(), 100, (long)(1000.0/Double.parseDouble(m_RefreshingRatePar.getText())));
+                var timerTask = new PeriodicDataGenerator();
+                m_Timer.schedule(timerTask, 100, (long)(1000.0/Double.parseDouble(m_RefreshingRatePar.getText())));
             }
         });
     }
@@ -452,7 +453,8 @@ public class App extends Application {
             {
                 m_Timer.cancel();
                 m_Timer = new Timer();
-                m_Timer.schedule(new PeriodicDataGenerator(), 100, (long)(1000.0/Double.parseDouble(m_RefreshingRatePar.getText())));
+                var timerTask = new PeriodicDataGenerator();
+                m_Timer.schedule(timerTask, 100, (long)(1000.0/Double.parseDouble(m_RefreshingRatePar.getText())));
             }
 
         });

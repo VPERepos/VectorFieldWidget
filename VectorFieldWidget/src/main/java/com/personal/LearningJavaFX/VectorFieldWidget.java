@@ -897,8 +897,8 @@ class VectorfieldWidget
             var DirectRatio = (ActVectorLength/m_MaxVecLenTransformed);
             
             var ReverseRatio = (m_MinVecLenTransformed/ActVectorLength);
-            var Arrow = new Arrow(new Point2D(Elem[0],Elem[1]), new Point2D(Elem[2],Elem[3]), Color.rgb((int)(DirectRatio*255),0,(int)(ReverseRatio*255)), 0.5); 
-            m_Arrows.getChildren().add(Arrow.createArrow());
+            var arrow = new Arrow(new Point2D(Elem[0],Elem[1]), new Point2D(Elem[2],Elem[3]), Color.rgb((int)(DirectRatio*255),0,(int)(ReverseRatio*255)), 0.5); 
+            m_Arrows.getChildren().add(arrow.createArrow());
             
         }
         
