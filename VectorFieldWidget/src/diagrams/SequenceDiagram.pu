@@ -58,4 +58,68 @@ B -> B : initYTicksBox()
 deactivate B
 B -> B : initXAxis()
 activate B
+B -> B : initXAxisLabel()
+B -> B : initXLabelBox()
+B -> B : initXTickLabelSpacers()
+B -> B : initXTicksText()
+B -> B : setXTicksTextPosition()
+B -> B : setXTicksTextFont()
+B -> B : setXTicksLabelBox()
+B -> B : initXTicksSpacers()
+B -> B : initXTicksDrawing()
+B -> B : setXTickDrawingLength()
+B -> B : setXTickDrawingWidth()
+B -> B : initXTicksBox()
+deactivate B
+B -> B : initColorBar()
+activate B
+B -> B : initColorBarSpacers()
+B -> B : initColorBarTickText()
+B -> B : setColorBarTickTextPosition()
+B -> B : setColorBarTickTextFont()
+B -> B : setColorBarTickLabelBox()
+B -> B : initColorBarGradient()
+B -> B : drawColorBar()
+B -> B : intiColorBarSpacer()
+deactivate B
+B -> B : initPlotAxesRectangle()
+activate B
+B -> B : drawAxisRectangle()
+B -> B : putAxisRectangleIntoPlottingArea()
+deactivate B
+B -> B : transformVectorFieldData()
+
+B -> B : drawVectors()
+activate B
+loop for all points
+    B -> C **: Arrow()
+end
+deactivate B
+B -> B : initCanvas()
+deactivate B
+B ->> A
+deactivate B
+deactivate A
+A -> A : setModesComboBoxOnAction()
+A -> A : setXminCtrlOnAction()
+A -> A : setXmaxCtrlOnAction()
+A -> A : setYminCtrlOnAction()
+A -> A : setYmaxCtrlOnAction()
+A -> A : setDeltaXminCtrlOnAction()
+A -> A : setDeltaXmaxCtrlOnAction()
+A -> A : setDeltaYminCtrlOnAction()
+A -> A : setDeltaYmaxCtrlOnAction()
+A -> A : setNumberOfPointsOnAction()
+A -> A : setScalingFactorOnAction()
+A -> A : setRefreshinRateOnAction()
+A -> A : initializeStage()
+activate A
+A -> B : setWidth()
+B ->> A
+A -> B : setHeight()
+B ->> A
+A -> B : plotVectorField()
+activate B
+
+User -> A : toggles the Mode
 @enduml
