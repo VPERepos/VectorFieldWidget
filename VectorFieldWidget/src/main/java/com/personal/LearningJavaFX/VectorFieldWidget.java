@@ -275,8 +275,6 @@ class VectorfieldWidget
         initXAxis();
         initColorBar();
         initPlotAxesRectangle();
-        transformVectorFieldData();
-        drawVectors();
         initCanvas();
         
     }
@@ -337,7 +335,7 @@ class VectorfieldWidget
         initYAxisLabel();
         initYLabelBox();
         initYTickLabelSpacers();
-        initYTicksText();
+        setYTicksText();
         setYTicksTextPosition();
         setYTicksTextFont();
         initYTicksLabelBox();
@@ -378,7 +376,7 @@ class VectorfieldWidget
         VBox.setVgrow(m_YTicksLabelVerticalSpacer4, Priority.ALWAYS);
     }
 
-    private void initYTicksText()
+    private void setYTicksText()
     {
         double YTickDelta = Math.abs(m_MaxY-m_MinY+20/m_FactorY)/4.0;
         m_YTickText1 = new Text(String.format("%.2f", m_MaxY+10/m_FactorY));
@@ -464,7 +462,7 @@ class VectorfieldWidget
         initXAxisLabel();
         initXLabelBox();
         initXTickLabelSpacers();
-        initXTicksText();
+        setXTicksText();
         setXTicksTextPosition();
         setXTicksTextFont();
         initXTicksSpacers();
@@ -504,7 +502,7 @@ class VectorfieldWidget
         HBox.setHgrow(m_XTicksHorizontalSpacer4, Priority.ALWAYS);
     }
 
-    private void initXTicksText()
+    private void setXTicksText()
     {
         double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
         m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
@@ -592,10 +590,10 @@ class VectorfieldWidget
     private void initColorBar()
     {
         initColorBarSpacers();
-        initColorBarTickText();
-        setColorBarTickTextPosition();
-        setColorBarTickTextFont();
-        setColorBarTickLabelBox();
+        setColorBarTicksText();
+        setColorBarTicksTextPosition();
+        setColorBarTicksTextFont();
+        setColorBarTicksLabelBox();
         initColorBarGradient();
         drawColorBar();
         intiColorBarSpacer();
@@ -613,7 +611,7 @@ class VectorfieldWidget
         VBox.setVgrow(m_CBTicksLabelVerticalSpacer4, Priority.ALWAYS);
     }
 
-    private void initColorBarTickText()
+    private void setColorBarTicksText()
     {
         double CBTickDelta = Math.abs(m_MaxVecLen-m_MinVecLen)/4.0;
         m_CBTickText1 = new Text(String.format("%.6f", m_MaxVecLen));
@@ -623,7 +621,7 @@ class VectorfieldWidget
         m_CBTickText5 = new Text(String.format("%.6f", m_MinVecLen));
     }
 
-    private void setColorBarTickTextPosition()
+    private void setColorBarTicksTextPosition()
     {
         m_CBTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
         m_CBTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
@@ -632,7 +630,7 @@ class VectorfieldWidget
         m_CBTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
     }
 
-    private void setColorBarTickTextFont()
+    private void setColorBarTicksTextFont()
     {
         m_CBTickText1.setFont(new Font(m_FontSizeTickLabels));
         m_CBTickText2.setFont(new Font(m_FontSizeTickLabels));
@@ -641,7 +639,7 @@ class VectorfieldWidget
         m_CBTickText5.setFont(new Font(m_FontSizeTickLabels));
     }
 
-    private void setColorBarTickLabelBox()
+    private void setColorBarTicksLabelBox()
     {
         m_CBTicksLabelBox = new VBox(m_CBTickText1, m_CBTicksLabelVerticalSpacer1, m_CBTickText2, m_CBTicksLabelVerticalSpacer2,m_CBTickText3,m_CBTicksLabelVerticalSpacer3, m_CBTickText4, m_CBTicksLabelVerticalSpacer4, m_CBTickText5);
         m_CBTicksLabelBox.setAlignment(Pos.CENTER_RIGHT);
@@ -755,17 +753,17 @@ class VectorfieldWidget
         adjustSpacersForPlotting();
         setPlotAxesRectangleAndColorBarDimensions();
         
-        setXTickText();
-        setXTickTextPosition();
-        putXTickTextToLabelBox();
+        setXTicksText();
+        setXTicksTextPosition();
+        putXTicksTextToLabelBox();
         
-        setYTickText();
-        setYTickTextPosition();
-        putYTickTextToLabelBox();
+        setYTicksText();
+        setYTicksTextPosition();
+        putYTicksTextToLabelBox();
         
-        setColorBarTickText();
-        setColorBarTickTextPosition();
-        putColorBarTickTextToLabelBox();
+        setColorBarTicksText();
+        setColorBarTicksTextPosition();
+        putColorBarTicksTextToLabelBox();
         
         transformVectorFieldData();
         drawVectors();
@@ -787,31 +785,7 @@ class VectorfieldWidget
         m_ColorBar.setHeight(0.6*m_Height);
     }
 
-    private void setXTickText()
-    {
-        double XTickDelta = Math.abs(m_MaxX-m_MinX+20/m_FactorX)/4.0;
-        m_XTickText5 = new Text(String.format("%.2f", m_MaxX+10/m_FactorX));
-        m_XTickText4 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+3.0*XTickDelta));
-        m_XTickText3 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+2.0*XTickDelta));
-        m_XTickText2 = new Text(String.format("%.2f", m_MinX-10/m_FactorX+XTickDelta));
-        m_XTickText1 = new Text(String.format("%.2f", m_MinX-10/m_FactorX));
-    }
-
-    private void setXTickTextPosition()
-    {
-        var XtickLabelWidth5 = 0.5*m_XTickText5.getText().length();
-        var XtickLabelWidth4 = 0.5*m_XTickText4.getText().length();
-        var XtickLabelWidth3 = 0.5*m_XTickText3.getText().length();
-        var XtickLabelWidth2 = 0.5*m_XTickText2.getText().length();
-        var XtickLabelWidth1 = 0.5*m_XTickText1.getText().length();
-        m_XTickText1.setTranslateX(-0.3*XtickLabelWidth1*m_FontSizeTickLabels);
-        m_XTickText2.setTranslateX(-0.1*XtickLabelWidth2*m_FontSizeTickLabels);
-        m_XTickText3.setTranslateX(0.2*XtickLabelWidth3*m_FontSizeTickLabels);
-        m_XTickText4.setTranslateX(0.3*XtickLabelWidth4*m_FontSizeTickLabels);
-        m_XTickText5.setTranslateX(0.4*XtickLabelWidth5*m_FontSizeTickLabels);
-    }
-
-    private void putXTickTextToLabelBox()
+    private void putXTicksTextToLabelBox()
     {
         m_XTicksLabelBox.getChildren().clear();
         
@@ -826,26 +800,7 @@ class VectorfieldWidget
         m_XTicksLabelBox.getChildren().add(m_XTickText5);
     }
 
-    private void setYTickText()
-    {
-        double YTickDelta = Math.abs(m_MaxY-m_MinY+20/m_FactorY)/4.0;
-        m_YTickText1 = new Text(String.format("%.2f", m_MaxY+10/m_FactorY));
-        m_YTickText2 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+3.0*YTickDelta));
-        m_YTickText3 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+2.0*YTickDelta));
-        m_YTickText4 = new Text(String.format("%.2f", m_MinY-10/m_FactorY+YTickDelta));
-        m_YTickText5 = new Text(String.format("%.2f", m_MinY-10/m_FactorY));
-    }
-
-    private void setYTickTextPosition()
-    {
-        m_YTickText1.setTranslateY(-0.4*m_FontSizeTickLabels);
-        m_YTickText2.setTranslateY(-0.2*m_FontSizeTickLabels);
-        m_YTickText3.setTranslateY(-0.1*m_FontSizeTickLabels);
-        m_YTickText4.setTranslateY(0.2*m_FontSizeTickLabels);
-        m_YTickText5.setTranslateY(0.4*m_FontSizeTickLabels);
-    }
-
-    private void putYTickTextToLabelBox()
+    private void putYTicksTextToLabelBox()
     {
         m_YTicksLabelBox.getChildren().clear();
         m_YTicksLabelBox.getChildren().add(m_YTickText1);
@@ -859,17 +814,7 @@ class VectorfieldWidget
         m_YTicksLabelBox.getChildren().add(m_YTickText5);
     }
 
-    private void setColorBarTickText()
-    {
-        double CBTickDelta = Math.abs(m_MaxVecLen-m_MinVecLen)/4.0;
-        m_CBTickText1 = new Text(String.format("%.6f", m_MaxVecLen));
-        m_CBTickText2 = new Text(String.format("%.6f", m_MinVecLen+3.0*CBTickDelta));
-        m_CBTickText3 = new Text(String.format("%.6f", m_MinVecLen+2.0*CBTickDelta));
-        m_CBTickText4 = new Text(String.format("%.6f", m_MinVecLen+CBTickDelta));
-        m_CBTickText5 = new Text(String.format("%.6f", m_MinVecLen));
-    }
-
-    private void putColorBarTickTextToLabelBox()
+    private void putColorBarTicksTextToLabelBox()
     {
         m_CBTicksLabelBox.getChildren().clear();
         m_CBTicksLabelBox.getChildren().add(m_CBTickText1);

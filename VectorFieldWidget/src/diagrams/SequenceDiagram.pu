@@ -46,7 +46,7 @@ activate B
 B -> B : initYAxisLabel()
 B -> B : initYLabelBox()
 B -> B : initYTickLabelSpacers()
-B -> B : initYTicksText()
+B -> B : setYTicksText()
 B -> B : setYTicksTextPosition()
 B -> B : setYTicksTextFont()
 B -> B : initYTicksLabelBox()
@@ -61,7 +61,7 @@ activate B
 B -> B : initXAxisLabel()
 B -> B : initXLabelBox()
 B -> B : initXTickLabelSpacers()
-B -> B : initXTicksText()
+B -> B : setXTicksText()
 B -> B : setXTicksTextPosition()
 B -> B : setXTicksTextFont()
 B -> B : setXTicksLabelBox()
@@ -74,10 +74,10 @@ deactivate B
 B -> B : initColorBar()
 activate B
 B -> B : initColorBarSpacers()
-B -> B : initColorBarTickText()
-B -> B : setColorBarTickTextPosition()
-B -> B : setColorBarTickTextFont()
-B -> B : setColorBarTickLabelBox()
+B -> B : setColorBarTicksText()
+B -> B : setColorBarTicksTextPosition()
+B -> B : setColorBarTicksTextFont()
+B -> B : setColorBarTicksLabelBox()
 B -> B : initColorBarGradient()
 B -> B : drawColorBar()
 B -> B : intiColorBarSpacer()
@@ -87,14 +87,7 @@ activate B
 B -> B : drawAxisRectangle()
 B -> B : putAxisRectangleIntoPlottingArea()
 deactivate B
-B -> B : transformVectorFieldData()
 
-B -> B : drawVectors()
-activate B
-loop for all points
-    B -> C **: Arrow()
-end
-deactivate B
 B -> B : initCanvas()
 deactivate B
 B ->> A
@@ -120,6 +113,29 @@ A -> B : setHeight()
 B ->> A
 A -> B : plotVectorField()
 activate B
+B -> B : adjustSpacersForPlotting()
+B -> B : setPlotAxesRectangleAndColorBarDimensions()
+B -> B : setXTicksText()
+B -> B : setXTicksTextPosition()
+B -> B : putXTicksTextToLabelBox()
+B -> B : setYTicksText()
+B -> B : setYTicksTextPosition()
+B -> B : putYTicksTextToLabelBox()
+B -> B : setColorBarTicksText()
+B -> B : setColorBarTicksTextPosition()
+B -> B : putColorBarTicksTextToLabelBox()
+B -> B : transformVectorFieldData()
 
+B -> B : drawVectors()
+activate B
+loop for all points
+    B -> C **: Arrow()
+end
+deactivate B
+B ->> A
+deactivate B
+deactivate A
+deactivate A
+deactivate A
 User -> A : toggles the Mode
 @enduml
