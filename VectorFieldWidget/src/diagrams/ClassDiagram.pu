@@ -1,0 +1,152 @@
+@startuml
+
+skinparam monochrome true
+skinparam classAttributeIconSize 0
+
+together mainAppGroup{
+    
+    class javafx.application.Application{
+        +start()
+        +launch()
+    }
+    class App{
+        +main()
+        +start()
+        -initializeRootPane()
+        -initializeChildrenPanes()
+        -initializeParametersHolder()
+        -addXminToParametersHolder()
+        -addXmaxToParametersHolder()
+        -addYminToParametersHolder()
+        -addYmaxToParametersHolder()
+        -addDeltaXminToParametersHolder()
+        -addDeltaXmaxToParametersHolder()
+        -addDeltaYminToParametersHolder()
+        -addDeltaYmaxToParametersHolder()
+        -addNumOfPointsToParametersHolder()
+        -addAppModeComboBoxToParametersHolder()
+        -addParametersHolderToParametersPane()
+        -addRefreshingRateToParametersHolder()
+        -addScalingFactorToParametersHolder()
+        -parseParametersFromGuiControls()
+        -initializeVectorField()
+        -setModesComboBoxOnAction()
+        -setXminCtrlOnAction()
+        -setXmaxCtrlOnAction()
+        -setYminCtrlOnAction()
+        -setYmaxCtrlOnAction()
+        -setDeltaXminCtrlOnAction()
+        -setDeltaXmaxCtrlOnAction()
+        -setDeltaYminCtrlOnAction()
+        -setDeltaYmaxCtrlOnAction()
+        -setNumberOfPointsOnAction()
+        -setScalingFactorOnAction()
+        -setRefreshinRateOnAction()
+        -initializeStage()
+        -GenerateVectorFieldData()
+    }
+    class PeriodicDataGenerator{
+        +PeriodicDataGenerator()
+        +run()
+    }
+    class java.util.TimerTask{
+
+    }
+}
+together VectorFieldWidgetGroup{
+    class VectorFieldWidget{
+        +VectorFieldWidget()
+        +getData()
+        +setWidth()
+        +setHeight()
+        -initPlotAndAxisNames()
+        -initFontSizes()
+        -setInitialMinAndMaxValues()
+        -initParrentPane()
+        -initVectorFieldData()
+        -initVectorField()
+        -initSpacers()
+        -initCanvas()
+        -initPlotName()
+        -initYAxis()
+        -initYAxisLabel()
+        -initYLabelBox()
+        -initYTickLabelSpacers()
+        -initYTicksText()
+        -setYTicksTextPosition()
+        -setYTicksTextFont()
+        -initYTicksLabelBox()
+        -initYTicksSpacers()
+        -initYTickDrawing()
+        -setYTickDrawingLength()
+        -setYTickDrawingWidth()
+        -initYTicksBox()
+        -initXAxis()
+        -initXAxisLabel()
+        -initXLabelBox()
+        -initXTickLabelSpacers()
+        -initXTicksText()
+        -setXTicksTextPosition()
+        -setXTicksTextFont()
+        -setXTicksLabelBox()
+        -initXTicksSpacers()
+        -initXTicksDrawing()
+        -setXTickDrawingLength()
+        -setXTickDrawingWidth()
+        -initXTicksBox()
+        -initColorBar()
+        -initColorBarSpacers()
+        -initColorBarTickText()
+        -setColorBarTickTextPosition()
+        -setColorBarTickTextFont()
+        -setColorBarTickLabelBox()
+        -initColorBarGradient()
+        -drawColorBar()
+        -intiColorBarSpacer()
+        -initPlotAxesRectangle()
+        -drawAxisRectangle()
+        -putAxisRectangleIntoPlottingArea()
+        -transformVectorFieldData()
+        -PlotVectorField()
+        -adjustSpacersForPlotting()
+        -setPlotAxesRectangleAndColorBarDimensions()
+        -setXTickText()
+        -setXTickTextPosition()
+        -putXTickTextToLabelBox()
+        -setYTickText()
+        -setYTickTextPosition()
+        -putYTickTextToLabelBox()
+        -setColorBarTickText()
+        -putColorBarTickTextToLabelBox()
+        -drawVectors()
+        -setFontSizeTickLabels()
+        -setFontSizeAxisLabels()
+        -setScaleFactor()
+        -setXAxisName()
+        -setYAxisName()
+        -setVectorFieldData()
+        -refreshData()
+        -initCoordinateRanges()
+        -calculateActualVectorLength()
+        -rescaleVectorElement()
+        -recalculateFactors()
+    }
+
+    class Arrow{
+        +Arrow()
+        +createArrow()
+    }
+}
+
+App *-right-> VectorFieldWidget
+VectorFieldWidget +-right- Arrow
+
+javafx.application.Application <|-down- App
+PeriodicDataGenerator --+ App
+PeriodicDataGenerator --|> java.util.TimerTask
+
+
+App -[hidden]down-- javafx.application.Application
+PeriodicDataGenerator -[hidden]up-- java.util.TimerTask
+App -[hidden]right-- VectorFieldWidgetGroup
+@enduml
