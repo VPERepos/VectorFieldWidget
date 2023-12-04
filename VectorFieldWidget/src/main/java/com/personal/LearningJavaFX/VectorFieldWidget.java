@@ -748,7 +748,7 @@ class VectorfieldWidget
     }
         
     
-    public void PlotVectorField()
+    public void plotVectorField()
     {
         adjustSpacersForPlotting();
         setPlotAxesRectangleAndColorBarDimensions();

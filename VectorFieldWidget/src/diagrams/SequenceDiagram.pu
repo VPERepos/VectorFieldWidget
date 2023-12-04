@@ -2,15 +2,18 @@
 skinparam monochrome true
 skinparam classAttributeIconSize 0
 actor User
-participant "App:main()" as A
+participant "App" as A
 participant "VectorFieldWidget:m_VectorField" as B
 participant "Arrow:arrow" as C
 participant "Timer:m_Timer" as D
-User -> A **: starts the application
+participant "PeriodicDataGenerator" as E
+User -> A : main()
 activate A
 A -> A : launch()
+activate A
 A -> A : start()
 Activate A
+
 A -> A : initializeRootPane()
 A -> A : initializeChildrenPanes()
 A -> A : initializeParametersHolder()
@@ -136,6 +139,40 @@ B ->> A
 deactivate B
 deactivate A
 deactivate A
+A -->> User
+deactivate A
 deactivate A
 User -> A : toggles the Mode
+
+A -> A : onActoion()
+activate A
+alt Mode == Continuous Generation 
+A -> D **: Timer()
+activate D
+D -> E ** : PeriodicDataGenerator()
+E -> A : parseParametersFromGuiControls()
+A ->> E
+E ->> D
+D -> D : schedule()
+loop forever
+D -> E : run()
+activate E
+E -> B : setScaleFactor()
+B ->> E
+E -> A : generateVectorFieldData()
+A ->> E
+E -> B : setVectorFieldData()
+B ->> E
+E -> B : plotVectorField()
+B ->> E
+E -->> D
+deactivate E
+end
+D --> A
+else Mode == Single Shot
+A -> D : cancel()
+D ->> A
+deactivate D
+end
+
 @enduml
